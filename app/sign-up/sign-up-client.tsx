@@ -6,11 +6,13 @@ import { Separator } from "@/components/ui/separator";
 
 export default function SignUpClient() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex h-screen flex-col items-center justify-center py-10">
       <div className="w-full max-w-sm">
         <LoginForm action="sign-up" />
         <Separator className="my-4" />
-        <LoginButton />
+        <div className="flex justify-center">
+          <LoginButton />
+        </div>
       </div>
     </div>
   );

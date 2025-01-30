@@ -1,16 +1,17 @@
-import { auth } from '@/auth'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import SignUpClient from '../sign-up/sign-up-client' // Import Client Component
+"use server";
+
+import { getAuthSession } from "@/auth";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import SignUpClient from "./sign-up-client"; // Import Client Component
 
 export default async function SignUpPage() {
-  const cookieStore = cookies()
-  const session = await auth({ cookieStore })
+  const session = await getAuthSession();
 
   // Redirect to home if user is already logged in
   if (session?.user) {
-    redirect('/')
+    redirect("/");
   }
 
-  return <SignUpClient /> // Render Client Component
+  return <SignUpClient />; // Render Client Component
 }

@@ -1,9 +1,8 @@
-// app/sign-in/sign-in-client.tsx (Client Component)
-"use client"; // ✅ Must be a Client Component
+"use client";
 
-import { LoginButton } from '@/components/login-button';
-import { LoginForm } from '@/components/login-form';
-import { Separator } from '@/components/ui/separator';
+import { LoginButton } from "@/components/login-button";
+import { LoginForm } from "@/components/login-form";
+import { Separator } from "@/components/ui/separator";
 
 export default function SignInClient() {
   return (

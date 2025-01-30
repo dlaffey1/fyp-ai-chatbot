@@ -1,18 +1,17 @@
-// app/sign-in/page.tsx (Server Component)
 "use server";
-import { getAuthSession } from "@/auth"; 
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import SignInClient from './sign-in-client'; // ✅ Import Client Component
+
+import { getAuthSession } from "@/auth";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import SignInClient from "./sign-in-client"; // Import Client Component
 
 export default async function SignInPage() {
-  const cookieStore = cookies();
   const session = await getAuthSession();
 
-  // ✅ Redirect to home if user is already logged in
+  // Redirect to home if user is already logged in
   if (session?.user) {
-    redirect('/');
+    redirect("/");
   }
 
-  return <SignInClient />; // ✅ Render Client Component for UI
+  return <SignInClient />; // Render Client Component
 }
