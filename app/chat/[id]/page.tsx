@@ -1,53 +1,36 @@
-import { type Metadata } from 'next'
-import { notFound, redirect } from 'next/navigation'
+"use client";
+import { notFound, redirect } from "next/navigation";
 
-import { auth } from '@/auth'
-import { getChat } from '@/app/actions'
-import { Chat } from '@/components/chat'
-import { cookies } from 'next/headers'
+import { getAuthSession } from "@/auth"; // ✅ Correct auth import
+import { getChat } from "@/app/actions";
+import { Chat } from "@/components/chat";
 
-export const runtime = 'edge'
-export const preferredRegion = 'home'
+export const runtime = "edge";
+export const preferredRegion = "home";
 
 export interface ChatPageProps {
   params: {
-    id: string
-  }
-}
-
-export async function generateMetadata({
-  params
-}: ChatPageProps): Promise<Metadata> {
-  const cookieStore = cookies()
-  const session = await auth({ cookieStore })
-
-  if (!session?.user) {
-    return {}
-  }
-
-  const chat = await getChat(params.id)
-  return {
-    title: chat?.title.toString().slice(0, 50) ?? 'Chat'
-  }
+    id: string;
+  };
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
-  const cookieStore = cookies()
-  const session = await auth({ cookieStore })
+  // ✅ Use getAuthSession() instead of auth()
+  const session = await getAuthSession();
 
   if (!session?.user) {
-    redirect(`/sign-in?next=/chat/${params.id}`)
+    redirect(`/sign-in?next=/chat/${params.id}`);
   }
 
-  const chat = await getChat(params.id)
+  const chat = await getChat(params.id);
 
   if (!chat) {
-    notFound()
+    notFound();
   }
 
   if (chat?.userId !== session?.user?.id) {
-    notFound()
+    notFound();
   }
 
-  return <Chat id={chat.id} initialMessages={chat.messages} />
+  return <Chat id={chat.id} initialMessages={chat.messages} />;
 }

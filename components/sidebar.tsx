@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -29,7 +29,19 @@ export function Sidebar({ children }: SidebarProps) {
         <SheetHeader className="p-4">
           <SheetTitle className="text-sm">Chat History</SheetTitle>
         </SheetHeader>
+        
+        {/* Existing Sidebar Content */}
         {children}
+
+        {/* New Patient History Link */}
+        <div className="p-4 border-t mt-auto">
+          <Link
+            href="/history"
+            className="block p-2 text-sm text-blue-500 hover:underline"
+          >
+            View Patient History
+          </Link>
+        </div>
       </SheetContent>
     </Sheet>
   )

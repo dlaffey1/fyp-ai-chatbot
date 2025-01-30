@@ -1,17 +1,23 @@
-import 'server-only'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import "server-only";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
-export const auth = async ({
-  cookieStore
-}: {
-  cookieStore: ReturnType<typeof cookies>
-}) => {
-  // Create a Supabase client configured to use cookies
-  const supabase = createServerComponentClient({
-    cookies: () => cookieStore
-  })
-  const { data, error } = await supabase.auth.getSession()
-  if (error) throw error
-  return data.session
+export async function getAuthSession() {
+  try {
+    const cookieStore = cookies();
+    const supabase = createServerComponentClient({
+      cookies: () => cookieStore
+    });
+
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error("Supabase Auth Error:", error.message);
+      return null;
+    }
+
+    return data?.session ?? null;
+  } catch (err) {
+    console.error("Unexpected error in getAuthSession:", err);
+    return null;
+  }
 }

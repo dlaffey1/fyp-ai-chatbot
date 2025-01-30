@@ -1,3 +1,4 @@
+"use server";
 import 'server-only'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'

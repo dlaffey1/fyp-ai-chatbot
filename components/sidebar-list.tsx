@@ -1,36 +1,21 @@
-import { getChats, removeChat, shareChat } from '@/app/actions'
-import { SidebarActions } from '@/components/sidebar-actions'
-import { SidebarItem } from '@/components/sidebar-item'
+import Link from "next/link";
 
-export interface SidebarListProps {
-  userId?: string
-}
+const menuItems = [
+  { name: "Chat", href: "/chat" },
+  { name: "Patient History", href: "/history" }, // ✅ Add history link
+  { name: "Sign In", href: "/sign-in" },
+];
 
-export async function SidebarList({ userId }: SidebarListProps) {
-  const chats = await getChats(userId)
-
+export default function SidebarList() {
   return (
-    <div className="flex-1 overflow-auto">
-      {chats?.length ? (
-        <div className="space-y-2 px-2">
-          {chats.map(
-            chat =>
-              chat && (
-                <SidebarItem key={chat?.id} chat={chat}>
-                  <SidebarActions
-                    chat={chat}
-                    removeChat={removeChat}
-                    shareChat={shareChat}
-                  />
-                </SidebarItem>
-              )
-          )}
-        </div>
-      ) : (
-        <div className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">No chat history</p>
-        </div>
-      )}
-    </div>
-  )
+    <ul>
+      {menuItems.map((item) => (
+        <li key={item.name} className="mb-2">
+          <Link href={item.href} className="block p-2 rounded hover:bg-gray-700">
+            {item.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
 }

@@ -1,38 +1,37 @@
-import { UseChatHelpers } from 'ai/react'
+import { UseChatHelpers } from "ai/react";
 
-import { Button } from '@/components/ui/button'
-import { ExternalLink } from '@/components/external-link'
-import { IconArrowRight } from '@/components/ui/icons'
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "@/components/external-link";
+import { IconArrowRight } from "@/components/ui/icons";
 
 const exampleMessages = [
   {
-    heading: 'Explain technical concepts',
-    message: `What is a "serverless function"?`
+    heading: "Ask about a patient case",
+    message: "What is the recommended treatment for a patient with pneumonia?"
   },
   {
-    heading: 'Summarize an article',
-    message: 'Summarize the following article for a 2nd grader: \n'
+    heading: "Summarize a medical history",
+    message: "Summarize this patient's history in simple terms."
   },
   {
-    heading: 'Draft an email',
-    message: `Draft an email to my boss about the following: \n`
+    heading: "Identify key concerns",
+    message: "What are the key concerns based on this patient's symptoms?"
   }
-]
+];
 
-export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
+export function EmptyScreen({ setInput }: Pick<UseChatHelpers, "setInput">) {
   return (
     <div className="mx-auto max-w-2xl px-4">
       <div className="rounded-lg border bg-background p-8">
         <h1 className="mb-2 text-lg font-semibold">
-          Welcome to the Supabaseified Next.js AI Chatbot!
+          Welcome to the Patient History Assistant!
         </h1>
         <p className="mb-2 leading-normal text-muted-foreground">
-          This is an open source AI chatbot app template built with{' '}
-          <ExternalLink href="https://nextjs.org">Next.js</ExternalLink> and{' '}
-          <ExternalLink href="https://supabase.com">Supabase</ExternalLink>.
+          This AI assistant helps analyze and discuss patient history. 
+          You can ask about past diagnoses, summarize records, or get insights on conditions.
         </p>
         <p className="leading-normal text-muted-foreground">
-          You can start a conversation here or try the following examples:
+          Start by asking a question or try one of the examples below:
         </p>
         <div className="mt-4 flex flex-col items-start space-y-2">
           {exampleMessages.map((message, index) => (
@@ -49,5 +48,5 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
         </div>
       </div>
     </div>
-  )
+  );
 }
