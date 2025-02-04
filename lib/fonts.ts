@@ -1,18 +1,39 @@
-// lib/fonts.ts
-import { Inter, JetBrains_Mono } from "next/font/google";
+import localFont from 'next/font/local';
 
-// Keep Inter if you want it
-export const fontSans = Inter({
-  subsets: ["latin"],
+// Load Inter from local files
+export const fontSans = localFont({
+  src: [
+    {
+      path: '/fonts/Inter-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '/fonts/Inter-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
   variable: "--font-sans",
-  preload: false,
+  display: "swap",
   fallback: ["sans-serif"],
 });
 
-// Re-add JetBrains Mono
-export const fontMono = JetBrains_Mono({
-  subsets: ["latin"],
+// Load JetBrains Mono from Google Fonts (or do the same local process)
+export const fontMono = localFont({
+  src: [
+    {
+      path: '/fonts/JetBrainsMono-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '/fonts/JetBrainsMono-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
   variable: "--font-mono",
-  preload: false,
+  display: "swap",
   fallback: ["monospace"],
 });
