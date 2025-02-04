@@ -1,25 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { Chat } from "@/components/chat_askquestion";
 import { Providers } from "@/components/providers";
 
 /**
  * This page:
- *   1) Fetches the patient history from /generate-history/ once.
- *   2) Displays the fetched history for the user to see.
- *   3) Renders a <Chat> that references that same history when calling /ask-question/.
+ *  1) Fetches the patient history from /generate-history/ once,
+ *     ignoring the second invocation in dev mode by using a ref.
+ *  2) Displays the fetched history for the user.
+ *  3) Renders a <Chat> that references that same history
+ *     when calling /ask-question/.
  */
 export default function HistoryPage() {
   const [history, setHistory] = useState<string | null>(null);
-  const [historyLoaded, setHistoryLoaded] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // This ref ensures we only fetch once, even in React's Strict Mode
+  // which calls useEffect twice in dev.
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
-    const fetchHistory = async () => {
-      if (historyLoaded) return;
+    // If we've already fetched (or are in the process), do nothing
+    if (hasFetchedRef.current) return;
+    hasFetchedRef.current = true; // Mark as fetched to block future calls
 
+    const fetchHistory = async () => {
       console.log("Fetching patient history...");
       setLoading(true);
 
@@ -31,7 +38,6 @@ export default function HistoryPage() {
         });
 
         console.log("History API Response:", res);
-
         if (!res.ok) {
           throw new Error(`API responded with status ${res.status}`);
         }
@@ -46,8 +52,6 @@ export default function HistoryPage() {
           console.warn("No history found in API response:", data);
           setHistory("No patient history found.");
         }
-
-        setHistoryLoaded(true);
       } catch (error) {
         console.error("Error fetching history:", (error as Error).message);
         setHistory(`Failed to load history: ${(error as Error).message}`);
@@ -57,14 +61,14 @@ export default function HistoryPage() {
     };
 
     fetchHistory();
-  }, [historyLoaded]);
+  }, []);
 
   return (
     <Providers attribute="class" defaultTheme="system" enableSystem>
       <div className="flex flex-col min-h-screen">
         <Toaster />
 
-        {/* Display the Patient History (once loaded) */}
+        {/* Show the Patient History (once loaded) */}
         {history && (
           <div className="mx-auto max-w-2xl px-4 mt-6">
             <div className="rounded-lg border bg-background p-8">
