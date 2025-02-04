@@ -1,4 +1,3 @@
-"use client";
 import { notFound, redirect } from "next/navigation";
 
 import { getAuthSession } from "@/auth.server"; // ✅ Correct auth import
