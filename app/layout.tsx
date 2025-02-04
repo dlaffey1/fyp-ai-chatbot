@@ -9,6 +9,7 @@ import { Providers } from "@/components/providers";
 import { Header } from "@/components/header-server"; 
 import { getAuthSession } from "@/auth.server"; 
 
+
 export const metadata: Metadata = {
   title: {
     default: "Patient History Assistant",
