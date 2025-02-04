@@ -1,7 +1,7 @@
 "use client";
 import { notFound, redirect } from "next/navigation";
 
-import { getAuthSession } from "@/auth"; // ✅ Correct auth import
+import { getAuthSession } from "@/auth.server"; // ✅ Correct auth import
 import { getChat } from "@/app/actions";
 import { Chat } from "@/components/chat";
 

@@ -5,7 +5,7 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { Database } from "@/lib/db_types";
 
-import { getAuthSession } from "@/auth"; // ✅ Correct import
+import { getAuthSession } from "@/auth.server"; // ✅ Correct import
 import { nanoid } from "@/lib/utils";
 
 export const runtime = "edge";

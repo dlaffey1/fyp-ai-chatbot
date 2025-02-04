@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getAuthSession } from "@/auth";
+import { getAuthSession } from "@/auth.server";
 
 export default function HeaderNav() {
   const [session, setSession] = useState<any>(null);

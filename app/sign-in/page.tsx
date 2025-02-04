@@ -1,6 +1,6 @@
 "use server";
 
-import { getAuthSession } from "@/auth";
+import { getAuthSession } from "@/auth.server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import SignInClient from "./sign-in-client"; // Import Client Component
