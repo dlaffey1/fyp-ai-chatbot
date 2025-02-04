@@ -7,7 +7,7 @@ import { IconArrowRight } from "@/components/ui/icons";
 const exampleMessages = [
   {
     heading: "Ask about a patient case",
-    message: "What is the recommended treatment for a patient with pneumonia?"
+    message: "Outline the details of the patient case?"
   },
   {
     heading: "Summarize a medical history",
