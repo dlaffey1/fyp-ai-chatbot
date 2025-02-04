@@ -1,7 +1,6 @@
 'use client'
 
 import { useChat, type Message } from 'ai/react'
-
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
@@ -17,23 +16,27 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { useState } from 'react'
-import { Button } from './ui/button'
-import { Input } from './ui/input'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { toast } from 'react-hot-toast'
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
+
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
 }
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
+  // Local storage for OpenAI API key in preview mode
   const [previewToken, setPreviewToken] = useLocalStorage<string | null>(
     'ai-token',
     null
   )
   const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW)
   const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? '')
+
+  // UseChat hook for managing chat state
   const { messages, append, reload, stop, isLoading, input, setInput } =
     useChat({
       initialMessages,
@@ -48,9 +51,11 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         }
       }
     })
+
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
+        {/* Render chat messages or empty screen */}
         {messages.length ? (
           <>
             <ChatList messages={messages} />
@@ -60,6 +65,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           <EmptyScreen setInput={setInput} />
         )}
       </div>
+
+      {/* Chat panel for input and controls */}
       <ChatPanel
         id={id}
         isLoading={isLoading}
@@ -71,6 +78,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         setInput={setInput}
       />
 
+      {/* Dialog for entering OpenAI API key in preview environments */}
       <Dialog open={previewTokenDialog} onOpenChange={setPreviewTokenDialog}>
         <DialogContent>
           <DialogHeader>
@@ -80,19 +88,18 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
               <a
                 href="https://platform.openai.com/signup/"
                 className="underline"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 signing up
               </a>{' '}
-              on the OpenAI website. This is only necessary for preview
-              environments so that the open source community can test the app.
-              The token will be saved to your browser&apos;s local storage under
-              the name <code className="font-mono">ai-token</code>.
+              on the OpenAI website.
             </DialogDescription>
           </DialogHeader>
           <Input
             value={previewTokenInput}
             placeholder="OpenAI API key"
-            onChange={e => setPreviewTokenInput(e.target.value)}
+            onChange={(e) => setPreviewTokenInput(e.target.value)}
           />
           <DialogFooter className="items-center">
             <Button

@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useChat, type Message } from "ai/react";
 import { Toaster } from "react-hot-toast";
-import { Chat } from "@/components/chat";
+import { Chat } from "@/components/chat_askquestion";
 import { Providers } from "@/components/providers";
 
+/**
+ * This page:
+ *   1) Fetches the patient history from /generate-history/ once.
+ *   2) Displays the fetched history for the user to see.
+ *   3) Renders a <Chat> that references that same history when calling /ask-question/.
+ */
 export default function HistoryPage() {
   const [history, setHistory] = useState<string | null>(null);
   const [historyLoaded, setHistoryLoaded] = useState<boolean>(false);
-  const { messages, append, input, setInput } = useChat();
-  const [chatUpdated, setChatUpdated] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true); // ✅ Added loading state
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -39,7 +42,6 @@ export default function HistoryPage() {
         if (data.history) {
           console.log("Setting history state...");
           setHistory(data.history);
-          setChatUpdated(prev => !prev);
         } else {
           console.warn("No history found in API response:", data);
           setHistory("No patient history found.");
@@ -57,51 +59,12 @@ export default function HistoryPage() {
     fetchHistory();
   }, [historyLoaded]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    console.log("User input detected:", input);
-    append({ role: "user", content: input } as Message);
-    setInput("");
-
-    try {
-      console.log("Sending request to Ask-Question API...");
-      const res = await fetch("http://127.0.0.1:8000/ask-question/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ question: input, history }),
-      });
-
-      console.log("Ask-Question API Response:", res);
-
-      if (!res.ok) {
-        throw new Error(`Ask-Question API error: ${res.status}`);
-      }
-
-      const data = await res.json();
-      console.log("Parsed Ask-Question Response:", data);
-
-      if (data.answer) {
-        console.log("Appending AI response...");
-        append({ role: "assistant", content: data.answer } as Message);
-      } else {
-        console.warn("No answer received:", data);
-        append({ role: "assistant", content: "No response received." } as Message);
-      }
-    } catch (error) {
-      console.error("Error sending question:", (error as Error).message);
-      append({ role: "assistant", content: `Failed to get a response: ${(error as Error).message}` } as Message);
-    }
-  };
-
   return (
     <Providers attribute="class" defaultTheme="system" enableSystem>
       <div className="flex flex-col min-h-screen">
         <Toaster />
 
-        {/* ✅ Only the Patient History Box remains, removing duplicate welcome box */}
+        {/* Display the Patient History (once loaded) */}
         {history && (
           <div className="mx-auto max-w-2xl px-4 mt-6">
             <div className="rounded-lg border bg-background p-8">
@@ -111,8 +74,15 @@ export default function HistoryPage() {
           </div>
         )}
 
-        {/* ✅ Chat Box */}
-        <Chat id="history" key={String(chatUpdated)} onSubmit={handleSubmit} />
+        {/* 
+          Single Chat component 
+          - uses your custom logic 
+          - sends { question, history } to /ask-question
+        */}
+        <Chat
+          className="mx-auto max-w-2xl px-4 mt-4"
+          history={history}
+        />
       </div>
     </Providers>
   );
