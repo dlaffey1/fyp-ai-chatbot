@@ -1,60 +1,65 @@
-'use client'
+"use client";
 
-import { useChat, type Message } from 'ai/react'
-import { cn } from '@/lib/utils'
-import { ChatList } from '@/components/chat-list'
-import { ChatPanel } from '@/components/chat-panel'
-import { EmptyScreen } from '@/components/empty-screen'
-import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
-import { useLocalStorage } from '@/lib/hooks/use-local-storage'
+import { useChat, type Message } from "ai/react";
+import { cn } from "@/lib/utils";
+import { ChatList } from "@/components/chat-list";
+import { ChatPanel } from "@/components/chat-panel";
+import { EmptyScreen } from "@/components/empty-screen";
+import { ChatScrollAnchor } from "@/components/chat-scroll-anchor";
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog'
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { toast } from 'react-hot-toast'
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "react-hot-toast";
 
-const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
+const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
 
-export interface ChatProps extends React.ComponentProps<'div'> {
-  initialMessages?: Message[]
-  id?: string
+export interface ChatProps extends React.ComponentProps<"div"> {
+  initialMessages?: Message[];
+  id?: string;
 }
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
-  // Local storage for OpenAI API key in preview mode
+  // Local storage for an OpenAI API key in preview mode
   const [previewToken, setPreviewToken] = useLocalStorage<string | null>(
-    'ai-token',
+    "ai-token",
     null
-  )
-  const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW)
-  const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? '')
+  );
+  const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW);
+  const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? "");
 
   // UseChat hook for managing chat state
-  const { messages, append, reload, stop, isLoading, input, setInput } =
-    useChat({
-      initialMessages,
+  const { messages, append, isLoading, input, setInput } = useChat({
+    initialMessages,
+    id,
+    body: {
       id,
-      body: {
-        id,
-        previewToken
-      },
-      onResponse(response) {
-        if (response.status === 401) {
-          toast.error(response.statusText)
-        }
+      previewToken,
+    },
+    onResponse(response) {
+      if (response.status === 401) {
+        toast.error(response.statusText);
       }
-    })
+    },
+  });
+
+  // 1) We'll handle user input submission by calling 'append' ourselves:
+  async function handleSend(userInput: string) {
+    if (!userInput.trim()) return;
+    await append({ role: "user", content: userInput });
+  }
 
   return (
     <>
-      <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
+      <div className={cn("pb-[200px] pt-4 md:pt-10", className)}>
         {/* Render chat messages or empty screen */}
         {messages.length ? (
           <>
@@ -66,16 +71,17 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         )}
       </div>
 
-      {/* Chat panel for input and controls */}
+      {/* 
+        2) Pass 'handleSend' as 'onSubmit' to ChatPanel.
+           We do NOT pass stop, append, reload, etc. 
+      */}
       <ChatPanel
         id={id}
         isLoading={isLoading}
-        stop={stop}
-        append={append}
-        reload={reload}
         messages={messages}
         input={input}
         setInput={setInput}
+        onSubmit={handleSend}
       />
 
       {/* Dialog for entering OpenAI API key in preview environments */}
@@ -84,7 +90,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           <DialogHeader>
             <DialogTitle>Enter your OpenAI Key</DialogTitle>
             <DialogDescription>
-              If you have not obtained your OpenAI API key, you can do so by{' '}
+              If you have not obtained your OpenAI API key, you can do so by{" "}
               <a
                 href="https://platform.openai.com/signup/"
                 className="underline"
@@ -92,7 +98,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
                 rel="noopener noreferrer"
               >
                 signing up
-              </a>{' '}
+              </a>{" "}
               on the OpenAI website.
             </DialogDescription>
           </DialogHeader>
@@ -104,8 +110,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           <DialogFooter className="items-center">
             <Button
               onClick={() => {
-                setPreviewToken(previewTokenInput)
-                setPreviewTokenDialog(false)
+                setPreviewToken(previewTokenInput);
+                setPreviewTokenDialog(false);
               }}
             >
               Save Token
@@ -114,5 +120,5 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }
