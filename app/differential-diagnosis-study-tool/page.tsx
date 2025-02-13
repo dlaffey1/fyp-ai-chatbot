@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { Chat } from "@/components/chat_askquestion";
 import { Providers } from "@/components/providers";
+import { HistoryMarkingForm } from "@/components/HistoryMarkingForm";
 
 interface HistoryData {
   PC: string;
@@ -18,6 +19,8 @@ interface HistoryData {
 export default function ChatPage() {
   const [history, setHistory] = useState<HistoryData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [historyLoadedAt, setHistoryLoadedAt] = useState<number | null>(null);
+  const [questionsCount, setQuestionsCount] = useState<number>(0); // Update this as ask-question is hit.
   const hasFetchedRef = useRef(false);
 
   useEffect(() => {
@@ -39,6 +42,8 @@ export default function ChatPage() {
 
         const data = await res.json();
         setHistory(data.history);
+        // Record the time when the history is successfully loaded.
+        setHistoryLoadedAt(Date.now());
       } catch (error) {
         console.error("Error fetching history:", error);
       } finally {
@@ -63,10 +68,22 @@ export default function ChatPage() {
 
         {/* Chat section (only visible when history is loaded) */}
         {!loading && (
-          <Chat
-            className="mx-auto max-w-2xl px-4 mt-4"
-            history={history ? JSON.stringify(history) : ""}
-          />
+          <>
+            <Chat
+              className="mx-auto max-w-2xl px-4 mt-4"
+              history={history ? JSON.stringify(history) : ""}
+            />
+            {/* Add the History Marking Form below the Chat section with increased bottom margin */}
+            <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
+              {history && historyLoadedAt && (
+                <HistoryMarkingForm
+                  expectedHistory={JSON.stringify(history)}
+                  historyLoadedAt={historyLoadedAt}
+                  questionsCount={questionsCount}
+                />
+              )}
+            </div>
+          </>
         )}
       </div>
     </Providers>
