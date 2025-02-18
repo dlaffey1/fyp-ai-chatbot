@@ -1,16 +1,18 @@
 // app/layout.tsx
-import { Metadata } from "next"
-import { Toaster } from "react-hot-toast"
+import { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 
-import "@/app/globals.css"
-import { fontMono, fontSans } from "@/lib/fonts"
-import { cn } from "@/lib/utils"
-import { TailwindIndicator } from "@/components/tailwind-indicator"
-import { Providers } from "@/components/providers"
-import { Sidebar } from "@/components/sidebar"
-import { Header } from "@/components/header-server"
-import { getAuthSession } from "@/auth.server"
-import SignInClient from "./sign-in/sign-in-client" // We'll render this if not signed in
+import "@/app/globals.css";
+import { fontMono, fontSans } from "@/lib/fonts";
+import { cn } from "@/lib/utils";
+import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { Providers } from "@/components/providers";
+import { Sidebar } from "@/components/sidebar";
+import { Header } from "@/components/header-server";
+import { getAuthSession } from "@/auth.server";
+
+import SignInClient from "./sign-in/sign-in-client"; 
+// or import { LoginForm } from "@/components/login-form" if you want to directly show the form
 
 export const metadata: Metadata = {
   title: {
@@ -28,14 +30,14 @@ export const metadata: Metadata = {
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
-}
+};
 
 interface RootLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  const session = await getAuthSession()
+  const session = await getAuthSession();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -44,11 +46,11 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           {!session?.user ? (
-            // If not authenticated, show the SignInClient component,
-            // which contains the single <form>.
+            // If not authenticated, show your sign-in UI:
             <SignInClient />
+            // Or you could do <LoginForm /> directly here
           ) : (
-            // Otherwise, show the main application layout
+            // If authenticated, show the main application layout
             <div className="flex min-h-screen">
               <Sidebar session={session} />
               <div className="flex flex-col flex-1">
@@ -63,5 +65,5 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         </Providers>
       </body>
     </html>
-  )
+  );
 }
