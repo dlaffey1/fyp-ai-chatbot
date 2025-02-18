@@ -7,12 +7,10 @@ import { fontMono, fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Providers } from "@/components/providers";
-import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header-server";
 import { getAuthSession } from "@/auth.server";
-
-import SignInClient from "./sign-in/sign-in-client"; 
-// or import { LoginForm } from "@/components/login-form" if you want to directly show the form
+import SignInClient from "./sign-in/sign-in-client";
+import { AppSidebar } from "@/components/app-sidebar"; // Composed sidebar
 
 export const metadata: Metadata = {
   title: {
@@ -46,18 +44,13 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           {!session?.user ? (
-            // If not authenticated, show your sign-in UI:
             <SignInClient />
-            // Or you could do <LoginForm /> directly here
           ) : (
-            // If authenticated, show the main application layout
-            <div className="flex min-h-screen">
-              <Sidebar session={session} />
+            <div className="flex min-h-screen w-full">
+              <AppSidebar session={session} />
               <div className="flex flex-col flex-1">
                 <Header />
-                <main className="flex flex-1 flex-col bg-muted/50">
-                  {children}
-                </main>
+                <main className="flex flex-1 flex-col bg-muted/50">{children}</main>
               </div>
             </div>
           )}

@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 module.exports = {
   reactStrictMode: true,
   experimental: {
@@ -21,6 +23,8 @@ module.exports = {
         bufferutil: false,
         "utf-8-validate": false,
       };
+      // Add MiniCssExtractPlugin to handle CSS extraction on the client.
+      config.plugins.push(new MiniCssExtractPlugin());
     }
 
     return config;
