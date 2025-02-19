@@ -1,18 +1,17 @@
 // app/layout.tsx
+export const dynamic = 'force-dynamic';
 import { Metadata } from "next";
 import React from "react";
 import { Toaster } from "react-hot-toast";
-
 import "@/app/globals.css";
 import { fontMono, fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/header-server";
-import { getAuthSession } from "@/auth.server";
+import { getAuthSession } from '@/auth.server';
 import SignInClient from "./sign-in/sign-in-client";
 import { AppSidebar } from "@/components/app-sidebar"; // Composed sidebar
-
 export const metadata: Metadata = {
   title: {
     default: "Patient History Assistant",
