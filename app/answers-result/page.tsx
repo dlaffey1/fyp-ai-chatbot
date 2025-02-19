@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 export default function AnswersResultPage() {
   const searchParams = useSearchParams();
   const answersString = searchParams.get("answers") || "{}";
-  let answers;
+  let answers: Record<string, unknown>;
   try {
     answers = JSON.parse(answersString);
   } catch (e) {
@@ -19,7 +19,7 @@ export default function AnswersResultPage() {
         {Object.entries(answers).map(([key, answer]) => (
           <div key={key} className="border p-4 rounded">
             <h2 className="text-xl font-semibold">Question {key}:</h2>
-            <p className="mt-2 whitespace-pre-wrap">{answer}</p>
+            <p className="mt-2 whitespace-pre-wrap">{String(answer)}</p>
           </div>
         ))}
       </div>
