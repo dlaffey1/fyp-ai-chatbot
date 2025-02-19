@@ -18,18 +18,20 @@ export default function MarkingResultPage() {
   }
 
   // Prepare overall score for display.
-  const overallScoreStr = result.overall_score.toString().trim();
-  const overallScoreDisplay = overallScoreStr.endsWith("%") ? overallScoreStr : `${overallScoreStr}%`;
+  const overallScoreStr = String(result.overall_score).trim();
+  const overallScoreDisplay = overallScoreStr.endsWith("%")
+    ? overallScoreStr
+    : `${overallScoreStr}%`;
 
   // Mapping of section keys to full names.
   const sectionNames: Record<string, string> = {
-    "PC": "Presenting Complaint",
-    "HPC": "History of Presenting Complaint",
-    "PMHx": "Past Medical History",
-    "DHx": "Drug History",
-    "FHx": "Family History",
-    "SHx": "Social History",
-    "SR": "Systems Review"
+    PC: "Presenting Complaint",
+    HPC: "History of Presenting Complaint",
+    PMHx: "Past Medical History",
+    DHx: "Drug History",
+    FHx: "Family History",
+    SHx: "Social History",
+    SR: "Systems Review"
   };
 
   return (
@@ -50,7 +52,7 @@ export default function MarkingResultPage() {
           {result.section_scores &&
             Object.entries(result.section_scores).map(([section, score]) => {
               const sectionName = sectionNames[section] || section;
-              const scoreStr = score.toString().trim();
+              const scoreStr = String(score).trim(); // Updated line
               const scoreDisplay = scoreStr.endsWith("%") ? scoreStr : `${scoreStr}%`;
               return (
                 <div key={section} className="border p-4 rounded">
