@@ -1,5 +1,6 @@
 // app/layout.tsx
 import { Metadata } from "next";
+import React from "react";
 import { Toaster } from "react-hot-toast";
 
 import "@/app/globals.css";

@@ -1,0 +1,293 @@
+[33m58df1c34[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m Minor commit - implemented border-border class in css
+[33mb9c95e8a[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m minor commit - dependency issues
+[33m414ef00e[m minor commit - fixing package.json errors+ npm instll errors
+[33m1bf530d7[m removed some build errors
+[33md86cf67f[m minor commit - removed some build errors
+[33m47876073[m small commit- updated package.json + utils.ts and profile page
+[33mf7db853a[m Medium Commit - added large amount of sidebar logic + integrated all routes + icons to it + fixed scaling errors with sidebar
+[33m1e0c3dd1[m added shadcn componenet for signing in + integrating google into authentication
+[33mc2f7bf3b[m Large commit - added large amount of logic to history page
+[33mb055c165[m added question generation to history generator form
+[33m75b21892[m large commit - added marking mechanism and modified differential diagnosis tool
+[33me50cbac1[m Large commit - adding profile, integration with supabase profile icon storage, improved header navbar + added differential diagnosis page
+[33m60d574e7[m added sections to the history page
+[33mef44d645[m added fonts but commented out due to path errors
+[33mee68aa6b[m fixed fonts
+[33m3d2f3c44[m passed classname prop
+[33md632df6c[m font changes
+[33mb910b72c[m add fonts
+[33m9123ae3a[m fixed deployment error
+[33mefdfe8f0[m fixed fallback font
+[33mb2ea826c[m Fix lockfile to match package.json
+[33mbeef0bd2[m Fix lockfile to match package.json
+[33m3be23291[m Fix lockfile to match package.json
+[33mc8065144[m Fix lockfile to match package.json
+[33mac7c34f4[m Fix lockfile to match package.json
+[33me1105320[m Added check for duplicate history endpoint call to verify only one is loaded-history.tsx
+[33m037ce73c[m Added changes to history page and modified chat logic to instead interact with ask-question endpoint
+[33m4f7551df[m Fix: Regenerate pnpm-lock.yaml to match package.json
+[33mb1cc81fc[m Fixed sign in logic
+[33m47303fa1[m Added history page, updated authentication, and refactored header components
+[33m5a8fcfec[m Merge pull request #9 from supabase-community/chore/rename-cookies-store
+[33me315fd9c[m chore: rename cookieStore.
+[33m7edfbeab[m Merge pull request #8 from supabase-community/fix/cookies-usage-edge-functions
+[33m9d3aed17[m fix: cookies usage on edge functions.
+[33m700de3ac[m Merge pull request #5 from fvaldes33/main
+[33mbd4dd70d[m fix: don't surface public chats in sidebar.
+[33m0a8f8715[m Merge pull request #7 from supabase-community/test/no-edge
+[33m0ca9a010[m chore: no edge runtime.
+[33m32c3bf0c[m Merge pull request #6 from supabase-community/feat/add-server-only-safeguards
+[33mc7377c26[m feat: add server-only safeguards.
+[33m12ce3b1a[m fix deps issue, add way to sign up/in with plain email and password, clean up user menu
+[33md0a8a08b[m Merge pull request #4 from supabase-community/feat/add-supa-deploy-button
+[33m2357255f[m feat: add deploy button.
+[33m4336aa72[m Merge pull request #2 from supabase-community/fix/make-deployable-on-hobby
+[33mdd625372[m fix: make deployable on vercel hobby projects.
+[33m2a680487[m[33m ([m[1;31morigin/pro-feature/og-edge[m[33m)[m Merge pull request #1 from supabase-community/supabaseify
+[33m045b0b9a[m fix: allow public access for share route.
+[33m20528475[m feat: migrate kv to postgres.
+[33m842803c9[m feat: add middleware auth redirect.
+[33m80be27ce[m chore: typo.
+[33mc5a77247[m feat: migrate to supabase auth.
+[33m012ea404[m chore: simplify `next-auth` (#80)
+[33m59123361[m Fix preview sign-in
+[33mee2113d9[m Use /sign-in during development too
+[33m7c5c23d4[m Upgrade next-auth
+[33md56da6cb[m Remove debugger statement
+[33m05b819dc[m Fix lockfile
+[33mf957405d[m Update auth for preview environments
+[33m74362693[m Fix og image
+[33mc8aefcab[m Force auth
+[33m1cc1beb6[m Clean up deps
+[33m8c30c1fc[m chore: upgrade `@auth/nextjs` (#76)
+[33m8a5b2fdf[m Merge branch 'main' into fix/next-auth-protocol-detection
+[33m5ea44801[m fix: upgrade `@auth/nextjs`
+[33m2dad7170[m Send a callbackUrl to /sign-in
+[33m0117cdfa[m Fix auth
+[33me9e40d7a[m Revert "Merge pull request #74 from vercel-labs:jp/next-auth"
+[33m6051e186[m Merge pull request #74 from vercel-labs:jp/next-auth
+[33mf2ae20d2[m Fix next-auth
+[33m28f62d80[m Remove auth at edge
+[33m8841f557[m Revert all next-auth changes
+[33m6f51b016[m Revert next-auth
+[33maa1b55b4[m Revert next-auth
+[33mb9c111b3[m Bump next-auth
+[33m9d63e761[m Only ask for tokens on preview
+[33mb5f61e75[m Revert next-auth upgrade
+[33me8003b2c[m Fix deployment to Vercel
+[33m3bcaa6fe[m Fix next-auth in lockfile
+[33m1b3dc4a4[m Fix share header
+[33mf326b47f[m fix: send message on Enter keypress only when not in input method mode (#63)
+[33m96a386b9[m Update README.md (#50)
+[33m6b816e26[m fix: Fix metadata title generation in chat pages (#41)
+[33m41e3b69c[m fix: Adds max height to form box (#51)
+[33mb2c0023e[m Update .env.example (#60)
+[33m71eaefe7[m Update .env.example
+[33m4865c7c8[m fix: Repeated tailwind extend fontFamily (#64)
+[33m17cba5d7[m fix: Reduce ineffective triggering of the clipboard (#65)
+[33m255ce639[m fix: Do not send empty messages. (#66)
+[33m62de8952[m fix: Do not send empty messages.
+[33m25361c84[m fix: Reduce ineffective triggering of the clipboard
+[33m476c696d[m fix: Repeated tailwind extend fontFamily
+[33mcfd367ba[m clearChats (#62)
+[33m805639db[m check chats length before run kv.pipeline() otherwise get empty pipeline
+[33m26143d6b[m Update .env.example
+[33m7aacacb9[m fix(ts): add back `DefaultSession` types (#57)
+[33m7c7f0fac[m fix(ts): add back `DefaultSession` types
+[33m2b6159e8[m chore: upgrade `next-auth` (#56)
+[33m09645780[m chore: upgrade `next-auth`
+[33m11ef8982[m chore: upgrade `next-auth` (#55)
+[33m8a84093a[m Merge branch 'chore/upgrade-next-auth' of github.com:balazsorban44/ai-chatbot into chore/upgrade-next-auth
+[33m14fafb99[m remove pnpm override
+[33m32f1edb3[m Update auth.ts
+[33ma905555d[m chore: upgrade `next-auth`
+[33mffab8267[m Update font files (#37)
+[33mf742d653[m update font files
+[33m6abfb068[m Add Apache 2.0 license
+[33me17364c4[m Switch from TTF to WOFF to fix OG image size issue (#35)
+[33m2c7dc8e5[m Switch from TTF to WOFF to fix OG image size issue
+[33m51e3f5ac[m temp fix
+[33m10c9d8ba[m Refresh router when creating and deleting chats (#34)
+[33m17efa265[m Refresh router when creating and deleting chats
+[33m865899af[m Add KV Database Environment Variables to .env.example file (#30)
+[33m7681a45c[m Update README.md
+[33m6249a7e5[m Update .env.example
+[33m01e289e3[m remove extra parentheses from readme (#25)
+[33md025575f[m remove extra parentheses from readme
+[33md353be60[m Update README.md
+[33m78034646[m Update README.md
+[33m8f07f244[m Update README.md
+[33m74ca946c[m Update README.md
+[33m8b3106f7[m Update README.md
+[33m04415fe8[m Update README.md
+[33m76d81fb5[m Fix language
+[33me0e487e8[m Fix og again
+[33m8fe5f2ec[m Fix text and add og
+[33m450aa07f[m Fix links
+[33m3f465f05[m Fix readme
+[33me333f04b[m Fix readme
+[33mcde6d259[m Update README.md
+[33m0f7e5301[m Fix readme
+[33mc022d200[m Remove novel
+[33m5c969c5b[m Update README.md
+[33ma6a8f6d7[m Update .env.example
+[33m375f0916[m Update README.md
+[33m36a1861d[m Implement preview token for oss (#23)
+[33m4d03e43e[m always use edge
+[33m67a5689e[m Tweak
+[33m2c6777e8[m Fix callback url
+[33m972bfa64[m Fix login
+[33m9a407de5[m Fix parameters for chat
+[33m11757ebb[m Fix hydration
+[33m5744f56f[m ai-connector -> ai
+[33md10abef8[m Merge branch 'main' into preview-token
+[33m8459ac8c[m Tweak route
+[33m8b47fbd9[m Fix deploy
+[33md1b8f162[m Really test out the key
+[33m52a209c5[m feat: main og (#22)
+[33mac5aefb3[m fix: replace vercel logo (#21)
+[33mc040a5c4[m Implement preview token for oss
+[33m33f2fabe[m fix: update sidebar item
+[33m477dc202[m fix username initials
+[33m65189685[m fix ERR_INVALID_URL
+[33m3c71b367[m Make chats private and fix redirection
+[33m735dc3e3[m fix: alignment
+[33m92529cdc[m feat: add default og image
+[33m000ae084[m style: className formatting
+[33mf643641b[m fix: replace vercel logo
+[33m37609dce[m Fix route
+[33m5de9ae61[m Fix types
+[33mf3e84695[m Update README.md
+[33m572ce917[m misc UI fixes (#20)
+[33m93a7ad99[m fix: remove unused hooks
+[33mcb941dac[m fix: actions
+[33mf4bcba82[m Fix up auth
+[33m07177853[m fix: sign-in page
+[33m8a142fcd[m Make main page at edge
+[33m1208dbbb[m Try removing edge
+[33m3bd12321[m Tweak auth
+[33m7ce8ae08[m fix: dropdown menu
+[33m615e8e63[m Move to Next Auth (#19)
+[33mfdd68cf6[m Bump to next canary
+[33m35224354[m Merge branch 'main' into jp/next-auth-2
+[33mf91a79f2[m feat: implement OG for share pages (#18)
+[33mfef709a2[m Update next-auth
+[33m1b61c394[m feat: update og display
+[33m187b55aa[m Implement next-auth v5
+[33mbe867d3f[m feat: implement og image
+[33ma9e49569[m Add sharing (#17)
+[33mc5fb7732[m Merge branch 'main' into feat/sharing
+[33m6962beb8[m feat: implement sharing page
+[33m137bdada[m feat: refactor chat sharing implementation
+[33m8cc3fea0[m feat: implement sharing
+[33mb0517a31[m Update UserButton to redirect correctly. (#16)
+[33me72e0048[m Update header.tsx
+[33m6923d621[m Bump next (#15)
+[33m1c415f26[m Bump next
+[33m385b31d4[m Move to clerk (#14)
+[33mf72d6028[m Update middleware.ts
+[33m2231c436[m fix: use reverse sort for chats
+[33ma3c8f93d[m fix: display of codeblock actions in dark mode
+[33m3fd18590[m fix: update layouts for chat pages
+[33m8cf847f7[m chore: add favicons
+[33m19726fe7[m fix: adjust offset calc
+[33maa98b5b6[m fix: display of codeblock on mobile
+[33mb8d3ba85[m feat: implement auto scroll
+[33ma9993640[m fix: update codeblock display
+[33m92309d77[m fix: pass down id to append
+[33m55704862[m Update README.md
+[33mfd99ff63[m fix: yank colors from clerk elements
+[33m8156e622[m fix: workaround for using currentUser in server actions
+[33mc0011ed1[m feat: add style for user button
+[33m5c01f8a6[m fix: use ai/react
+[33mf2c71a0f[m fix: remove unused user-menu
+[33md283d44c[m fix: className order
+[33m73916977[m feat: implement styles for sign in and sign up forms
+[33m567b0ac3[m Move to clerk
+[33mcd340320[m feat: implement copy message (#13)
+[33m8255f2d5[m feat: implement copy message
+[33m320db5da[m fix: misc UI updates (#12)
+[33mf476c903[m fix: remove zustand and use input and setInput
+[33m6f69b878[m fix: remove use client boundary
+[33m9158bfe8[m fix: update sheet display and sidebar items
+[33m282ef825[m fix: update login button and sidebar
+[33m5c2a3d4c[m feat: replace icons (#10)
+[33m7820d4d5[m docs: shadcn is lowercase :) (#11)
+[33m5d244f3b[m docs: shadcn is lowercase
+[33mdc3a7c35[m fix: remove unused dropdown item
+[33m3c34307a[m feat: replace lucide icons
+[33m44f93d33[m feat: implement new ui (#9)
+[33mf0f30594[m Update header.tsx
+[33m8bca1629[m fix: deploy button text
+[33m23ce83a9[m fix: add padding to chat message
+[33m857a9973[m feat: implement scroll to bottom
+[33mf15cd0c9[m fix: update sidebar transition
+[33mbd594122[m feat: update transition ease for sidebar
+[33md46af848[m feat: remove fontMessage use Inter
+[33m8ad73359[m Remove  "@ianvs/prettier-plugin-sort-imports": "^3.7.2"
+[33md087b429[m Tweak data fetching with suspense
+[33mf18e9028[m fix: show avatar on mobile
+[33m736e3e7a[m fix: update text for deploy button on mobile
+[33m9adac79c[m Don't commit vscode
+[33m8419b8df[m Add a readme
+[33mc1ed03ab[m Bump next
+[33md96be665[m chore: add eslint plugins for import and className sorting
+[33m0fa62071[m fix: let prose handle table rendering
+[33m8f64c558[m feat: update chat display and fix issue with regeneration
+[33me06f34b0[m Fix lockfile
+[33m74e4e96c[m Update route.ts
+[33m01dc4520[m feat: reorganize files and implement ui and sidebar
+[33m2e80864b[m Update empty-screen.tsx
+[33m62934703[m feat: implement new ui
+[33m4d5af8c6[m Organize imports
+[33mc3f3737a[m Organize imports
+[33mc7373f96[m Remove unused useRouter
+[33m13f431c3[m Try to upgrade next-auth
+[33m88514572[m Switch to KV in empty state
+[33m417f69e0[m Run prettier
+[33maa83a871[m More cleanup (#8)
+[33m33f7ead3[m More cleanup
+[33m8cc402ac[m Switch to @vercel/kv (#7)
+[33mfc79a708[m Switch to @vercel/kv
+[33m45d3a8d0[m Move to drizzle (#6)
+[33m9f4ef629[m Cleanup unused stuff
+[33m01527d45[m Remove auth on delete for now
+[33ma7af3107[m Users can only delete their own chats
+[33m09ac7639[m Edge
+[33m0846554f[m Switch to edge
+[33m1343d16c[m Cleanup prisma
+[33m9469d8c8[m Merge branch 'main' into alt-drizzle
+[33m0996de27[m Fix edge compat
+[33mc332a1b6[m Try drizzle
+[33m17bfd0ca[m Alt drizzle
+[33m030b2398[m Try to hack auth
+[33m2f212bfe[m Fix auth.ts
+[33m41dc9960[m Fix type error
+[33m240b14e7[m Fix import
+[33mc555ecd2[m Fix chat
+[33m916a9a96[m add favicon
+[33m398b6713[m add empty screen and external links
+[33md88eae72[m Try to use drizzle event though
+[33mf14e73ac[m Move to next-auth (#4)
+[33m29ddc26b[m Fix types for build
+[33mc28e79e9[m Fix types
+[33m1af7fb3d[m Remove vercel auth
+[33m9323d90a[m Remove edge
+[33m5f60a8ab[m Authenticate /api/generate
+[33ma46b2ac3[m Move to next-auth
+[33m3b8bb9de[m Add save to Prisma (#1)
+[33mdd9bcb7a[m Merge pull request #3 from vercel/shu/adda
+[33m9b825542[m fix
+[33ma71f01ea[m add isr
+[33mb33601d7[m Merge pull request #2 from vercel/shu/6e4e
+[33m11989b2a[m fix mobile header and logo color
+[33m60919451[m add save to prisma
+[33m562dbe74[m Add mobile header
+[33m54c25f2e[m Move things around
+[33mccdadbe5[m Simplify
+[33mae9eae00[m Change name
+[33m177b2cc2[m Add back vc auth temporarily to unblock things
+[33m07c2e7d3[m Devgpt
+[33m8c5ae3e1[m stuff
+[33m27cc8f4f[m Good
+[33ma0477625[m init
