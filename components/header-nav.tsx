@@ -77,7 +77,7 @@ export default function HeaderNav({ session }: { session: any }) {
           </button>
           <Link href="/profile">
             <img
-              src={profilePic}
+              src={profilePic || "/default-avatar.jpg"}
               alt="Profile"
               className="w-10 h-10 rounded-full object-cover border cursor-pointer hover:opacity-80 transition-opacity"
             />
