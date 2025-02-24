@@ -12,7 +12,7 @@ type Plan = {
   price: number;
   priceNote: string;
   cta: {
-    variant: "default" | "secondary"; // Updated allowed variants
+    variant: "default" | "secondary"; // Only allowed variants
     label: string;
     href: string;
   };
@@ -115,11 +115,9 @@ export default function Pricing() {
                   </div>
                   <div className="flex min-h-[40px] flex-col">
                     {plan.price > 0 && (
-                      <>
-                        <span className="text-sm">
-                          {plan.priceNote}
-                        </span>
-                      </>
+                      <span className="text-sm">
+                        {plan.priceNote}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -131,10 +129,7 @@ export default function Pricing() {
               <div>
                 <ul className="flex flex-col gap-2">
                   {plan.features.map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-center gap-2 text-sm"
-                    >
+                    <li key={feature} className="flex items-center gap-2 text-sm">
                       <span>{feature}</span>
                     </li>
                   ))}
