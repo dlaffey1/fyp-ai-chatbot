@@ -12,7 +12,7 @@ type Plan = {
   price: number;
   priceNote: string;
   cta: {
-    variant: "glow" | "default";
+    variant: "default" | "secondary"; // Updated allowed variants
     label: string;
     href: string;
   };
@@ -50,7 +50,7 @@ const plans: Plan[] = [
     price: 99,
     priceNote: "Unlimited requests with priority support.",
     cta: {
-      variant: "glow",
+      variant: "secondary", // Changed from "glow" to "secondary"
       label: "Choose Advanced",
       href: "/signup?plan=advanced", // Adjust route as needed
     },
@@ -135,7 +135,6 @@ export default function Pricing() {
                       key={feature}
                       className="flex items-center gap-2 text-sm"
                     >
-                      {/* Optionally, you can add an icon for each feature */}
                       <span>{feature}</span>
                     </li>
                   ))}
