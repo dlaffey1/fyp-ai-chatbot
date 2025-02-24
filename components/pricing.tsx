@@ -12,7 +12,7 @@ type Plan = {
   price: number;
   priceNote: string;
   cta: {
-    variant: "glow" | "default";
+    variant: "default" | "outline"; // Fix for TypeScript error
     label: string;
     href: string;
   };
@@ -28,7 +28,7 @@ const plans: Plan[] = [
     price: 0,
     priceNote: "Free and open-source forever.",
     cta: {
-      variant: "glow",
+      variant: "default",
       label: "Get started for free",
       href: "/docs/getting-started/introduction",
     },
@@ -42,7 +42,7 @@ const plans: Plan[] = [
   },
   {
     name: "Pro",
-    icon: <User className="h-4 w-4" />,
+    icon: <User className="size-4" />, // Replaced h-4 w-4 with size-4
     description: "For early-stage founders, solopreneurs and indie devs",
     price: 99,
     priceNote: "Lifetime access. Free updates. No recurring fees.",
@@ -59,11 +59,11 @@ const plans: Plan[] = [
     ],
     featured: true,
     classes:
-      "glass-3 from-card/100 to-card/100 dark:glass-4 after:content-[''] after:absolute after:-top-[128px] after:left-1/2 after:h-[128px] after:w-[100%] after:max-w-[960px] after:-translate-x-1/2 after:rounded-[50%] after:bg-brand-foreground/70 after:blur-[72px]",
+      "glass-3 from-card/100 to-card/100 dark:glass-4 after:content-[''] after:absolute after:-top-[128px] after:left-1/2 after:h-[128px] after:w-full after:max-w-[960px] after:-translate-x-1/2 after:rounded-full after:bg-brand-foreground/70 after:blur-[72px]",
   },
   {
     name: "Pro Team",
-    icon: <Users className="h-4 w-4" />,
+    icon: <Users className="size-4" />, // Replaced h-4 w-4 with size-4
     description: "For teams and agencies working on cool products together",
     price: 499,
     priceNote: "Lifetime access. Free updates. No recurring fees.",
@@ -77,7 +77,7 @@ const plans: Plan[] = [
     ],
     featured: false,
     classes:
-      "glass-2 to-trasparent dark:glass-3 after:content-[''] after:absolute after:-top-[128px] after:left-1/2 after:h-[128px] after:w-[100%] after:max-w-[960px] after:-translate-x-1/2 after:rounded-[50%] dark:after:bg-foreground/30 after:blur-[72px]",
+      "glass-2 to-transparent dark:glass-3 after:content-[''] after:absolute after:-top-[128px] after:left-1/2 after:h-[128px] after:w-full after:max-w-[960px] after:-translate-x-1/2 after:rounded-full dark:after:bg-foreground/30 after:blur-[72px]",
   },
 ];
 
@@ -100,13 +100,13 @@ export default function Pricing() {
               key={plan.name}
               className={cn(
                 "relative flex max-w-container flex-col gap-6 overflow-hidden rounded-2xl p-8 shadow-xl",
-                plan.classes,
+                plan.classes
               )}
             >
               <hr
                 className={cn(
-                  "absolute left-[10%] top-0 h-[1px] w-[80%] border-0 bg-gradient-to-r from-transparent via-foreground/60 to-transparent",
-                  plan.featured && "via-brand",
+                  "absolute left-[10%] top-0 h-px w-[80%] border-0 bg-gradient-to-r from-transparent via-foreground/60 to-transparent", // Replaced h-[1px] with h-px
+                  plan.featured && "via-brand"
                 )}
               />
               <div className="flex flex-col gap-7">
@@ -141,7 +141,7 @@ export default function Pricing() {
                     )}
                   </div>
                 </div>
-                <Button variant={plan.cta.variant} size="lg" asChild>
+                <Button variant={plan.cta.variant as "default" | "outline"} size="lg" asChild>
                   <Link href={plan.cta.href}>{plan.cta.label}</Link>
                 </Button>
                 <p className="min-h-[40px] max-w-[220px] text-sm text-muted-foreground">
@@ -156,7 +156,7 @@ export default function Pricing() {
                       key={feature}
                       className="flex items-center gap-2 text-sm"
                     >
-                      <CircleCheckBig className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <CircleCheckBig className="size-4 shrink-0 text-muted-foreground" />
                       {feature}
                     </li>
                   ))}
