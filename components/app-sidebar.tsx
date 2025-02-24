@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Home, Calendar, User } from "lucide-react"; // Replace or add icons as needed
+import { Home, Calendar, User, DollarSign } from "lucide-react"; // Added DollarSign for pricing
 
 import {
   Sidebar,
@@ -44,7 +44,6 @@ export function AppSidebar({ session }: { session?: any }) {
   // Fetch the profile picture on mount and when session changes.
   React.useEffect(() => {
     fetchProfilePicture();
-    // Optionally, you can listen for custom events to update the profile picture.
   }, [session, profileVersion]);
 
   return (
@@ -65,9 +64,7 @@ export function AppSidebar({ session }: { session?: any }) {
                   <SidebarMenuButton asChild>
                     <Link
                       href="/differential-diagnosis-study-tool"
-                      className={cn(
-                        "flex items-center text-sm text-sidebar-foreground hover:underline"
-                      )}
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
                     >
                       <Home className="mr-2" />
                       <span>Differential Diagnosis Tool</span>
@@ -78,9 +75,7 @@ export function AppSidebar({ session }: { session?: any }) {
                   <SidebarMenuButton asChild>
                     <Link
                       href="/history-generator-tool"
-                      className={cn(
-                        "flex items-center text-sm text-sidebar-foreground hover:underline"
-                      )}
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
                     >
                       <Calendar className="mr-2" />
                       <span>History Generator Tool</span>
@@ -90,10 +85,19 @@ export function AppSidebar({ session }: { session?: any }) {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <Link
+                      href="/pricing"
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
+                    >
+                      <DollarSign className="mr-2" />
+                      <span>Pricing</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
                       href="/sign-in"
-                      className={cn(
-                        "flex items-center text-sm text-sidebar-foreground hover:underline"
-                      )}
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
                     >
                       <User className="mr-2" />
                       <span>Sign In</span>
@@ -134,10 +138,7 @@ export function AppSidebar({ session }: { session?: any }) {
               </button>
             </div>
           ) : (
-            <Link
-              href="/sign-in"
-              className={cn("text-sm text-sidebar-foreground hover:underline")}
-            >
+            <Link href="/sign-in" className={cn("text-sm text-sidebar-foreground hover:underline")}>
               Sign In
             </Link>
           )}
