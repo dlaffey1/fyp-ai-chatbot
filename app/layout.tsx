@@ -12,6 +12,8 @@ import { Header } from "@/components/header-server";
 import { getAuthSession } from '@/auth.server';
 import SignInClient from "./sign-in/sign-in-client";
 import { AppSidebar } from "@/components/app-sidebar"; // Composed sidebar
+import { ThemeToggle } from "@/components/theme-toggle"; // Dark mode toggle component
+
 export const metadata: Metadata = {
   title: {
     default: "Patient History Assistant",
@@ -50,11 +52,17 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               <AppSidebar session={session} />
               <div className="flex flex-col flex-1">
                 <Header />
-                <main className="flex flex-1 flex-col bg-muted/50">{children}</main>
+                <main className="flex flex-1 flex-col bg-muted/50">
+                  {children}
+                </main>
               </div>
             </div>
           )}
           <TailwindIndicator />
+          {/* Dark mode toggle fixed at bottom right */}
+          <div className="fixed bottom-4 right-4 z-50">
+            <ThemeToggle />
+          </div>
         </Providers>
       </body>
     </html>
