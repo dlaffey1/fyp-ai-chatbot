@@ -53,7 +53,7 @@ export default function HistoryPage() {
   useEffect(() => {
     const fetchConditions = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/get-conditions/");
+        const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/get-conditions/");
         if (!res.ok) throw new Error("Failed to fetch conditions");
         const data = await res.json();
         setConditions(data.conditions || []);
@@ -72,7 +72,7 @@ export default function HistoryPage() {
     setOpen(false);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/generate-history/", {
+      const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/generate-history/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ condition }),

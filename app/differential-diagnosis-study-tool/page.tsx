@@ -30,7 +30,7 @@ export default function ChatPage() {
     const fetchHistory = async () => {
       setLoading(true);
       try {
-        const res = await fetch("http://127.0.0.1:8000/generate-history/", {
+        const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/generate-history/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

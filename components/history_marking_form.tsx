@@ -86,7 +86,7 @@ export function HistoryMarkingForm({
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/evaluate-history/", {
+      const response = await fetch("https://final-year-project-osce-simulator-1.onrender.com/api/evaluate-history/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

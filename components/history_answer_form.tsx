@@ -33,7 +33,7 @@ export function HistoryAnswerForm({ history }: HistoryAnswerFormProps) {
   const fetchQuestions = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/generate-questions/", {
+      const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/generate-questions/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ history }),
@@ -68,7 +68,7 @@ export function HistoryAnswerForm({ history }: HistoryAnswerFormProps) {
         user_answer: user_answer,
       };
       console.log(`Comparing answer for question ${index + 1}:`, payload);
-      return fetch("http://127.0.0.1:8000/api/compare-answer/", {
+      return fetch("https://final-year-project-osce-simulator-1.onrender.com/api/compare-answer/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
