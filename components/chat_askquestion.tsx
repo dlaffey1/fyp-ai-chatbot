@@ -55,7 +55,7 @@ export function Chat_askquestion({
     console.log("Sending request to /ask-question/:", payload);
 
     try {
-      const response = await fetch("https://fyp-ai-chatbot-kappa.vercel.app/ask-question/", {
+      const response = await fetch("https://final-year-project-osce-simulator-1.onrender.com/ask-question/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
