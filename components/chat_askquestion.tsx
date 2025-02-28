@@ -55,7 +55,7 @@ export function Chat_askquestion({
     console.log("Sending request to /ask-question/:", payload);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/ask-question/", {
+      const response = await fetch("https://fyp-ai-chatbot-kappa.vercel.app/ask-question/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
