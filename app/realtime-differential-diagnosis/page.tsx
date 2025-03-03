@@ -47,9 +47,9 @@ DHx: ${history.DHx}
 FHx: ${history.FHx}
 SHx: ${history.SHx}
 SR: ${history.SR}`;
-        const systemMessage = { role: "system", content: systemContent };
+        const systemMessage = { role: "system" as const, content: systemContent };
         const initialAssistant = {
-          role: "assistant",
+          role: "assistant" as const,
           content: "Hello, I'm John. How are you feeling today?",
         };
         setMessages([systemMessage, initialAssistant]);
@@ -121,7 +121,7 @@ SR: ${history.SR}`;
 
   // Function to send a text message to the realtime chat API.
   async function sendMessage(newMessage: string) {
-    const updatedMessages = [...messages, { role: "user", content: newMessage }];
+    const updatedMessages = [...messages, { role: "user" as const, content: newMessage }];
     setMessages(updatedMessages);
     try {
       const res = await fetch("http://localhost:8000/realtime/chat/", {
@@ -134,7 +134,7 @@ SR: ${history.SR}`;
       }
       const data = await res.json();
       const aiResponse = data.response;
-      setMessages([...updatedMessages, { role: "assistant", content: aiResponse }]);
+      setMessages([...updatedMessages, { role: "assistant" as const, content: aiResponse }]);
       speak(aiResponse);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -200,7 +200,7 @@ SR: ${history.SR}`;
           </button>
         </div>
       </div>
-      {/* Import and render the VoiceActivityDialog */}
+      {/* Render the VoiceActivityDialog */}
       <VoiceActivityDialog open={dialogOpen} onClose={handleStopRecording} />
     </div>
   );
