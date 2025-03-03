@@ -85,6 +85,17 @@ export function AppSidebar({ session }: { session?: any }) {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <Link
+                      href="/realtime-differential-diagnosis"
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
+                    >
+                      <DollarSign className="mr-2" />
+                      <span>Realtime Differential Diagnosis</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
                       href="/pricing"
                       className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
                     >
