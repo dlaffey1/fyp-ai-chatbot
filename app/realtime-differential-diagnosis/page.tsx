@@ -78,7 +78,7 @@ SR: ${history.SR}`;
           try {
             const formData = new FormData();
             formData.append("file", audioBlob, "recording.wav");
-            const res = await fetch("http://localhost:8000/realtime/transcribe/", {
+            const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/realtime/transcribe/", {
               method: "POST",
               body: formData,
             });
@@ -124,7 +124,7 @@ SR: ${history.SR}`;
     const updatedMessages = [...messages, { role: "user" as const, content: newMessage }];
     setMessages(updatedMessages);
     try {
-      const res = await fetch("http://localhost:8000/realtime/chat/", {
+      const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/realtime/chat/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedMessages, history: patientHistory }),
