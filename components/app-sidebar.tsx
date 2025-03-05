@@ -1,4 +1,3 @@
-// components/app-sidebar.tsx
 "use client";
 
 import * as React from "react";
@@ -19,11 +18,19 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { useApiUrl } from "@/config/contexts/api_url_context"; // Adjust the path if needed
 
 export function AppSidebar({ session }: { session?: any }) {
   // Profile picture state – default to a fallback image.
   const [profilePic, setProfilePic] = React.useState("/default-avatar.jpg");
   const [profileVersion, setProfileVersion] = React.useState(0);
+
+  const { apiUrl, setApiUrl } = useApiUrl();
+
+  // Debug: Log current API URL on render.
+  React.useEffect(() => {
+    console.debug("Current API URL:", apiUrl);
+  }, [apiUrl]);
 
   // Function to fetch profile picture.
   const fetchProfilePicture = async () => {
@@ -32,8 +39,10 @@ export function AppSidebar({ session }: { session?: any }) {
         const res = await fetch(`/api/get-profile-picture?id=${session.user.id}`);
         if (!res.ok) throw new Error("Failed to fetch profile picture");
         const data = await res.json();
-        // Use cache busting with the profileVersion
-        setProfilePic(data.avatar_url ? `${data.avatar_url}?v=${profileVersion}` : "/default-avatar.jpg");
+        // Use cache busting with the profileVersion.
+        setProfilePic(
+          data.avatar_url ? `${data.avatar_url}?v=${profileVersion}` : "/default-avatar.jpg"
+        );
       } catch (err) {
         console.error("Error fetching profile picture:", err);
         setProfilePic("/default-avatar.jpg");
@@ -45,6 +54,17 @@ export function AppSidebar({ session }: { session?: any }) {
   React.useEffect(() => {
     fetchProfilePicture();
   }, [session, profileVersion]);
+
+  // Toggle API URL between production and local.
+  const toggleApiUrl = () => {
+    if (apiUrl.includes("onrender.com")) {
+      console.debug("Switching API URL to local");
+      setApiUrl("http://localhost:8000");
+    } else {
+      console.debug("Switching API URL to production");
+      setApiUrl("https://final-year-project-osce-simulator-1.onrender.com");
+    }
+  };
 
   return (
     <SidebarProvider>
@@ -120,8 +140,14 @@ export function AppSidebar({ session }: { session?: any }) {
           </SidebarGroup>
         </SidebarContent>
 
-        {/* Sidebar Footer with Profile Icon and Sign Out */}
+        {/* Sidebar Footer with Profile Icon, Sign Out, and API URL Toggle */}
         <SidebarFooter className="border-t p-4">
+          <button
+            onClick={toggleApiUrl}
+            className="px-4 py-2 bg-gray-200 text-gray-900 rounded-md mb-4"
+          >
+            Switch API: {apiUrl.includes("localhost") ? "Local" : "Production"}
+          </button>
           {session?.user ? (
             <div className="flex items-center justify-between">
               <Link href="/profile">

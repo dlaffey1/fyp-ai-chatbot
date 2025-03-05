@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ApiUrlProvider } from "@/config/contexts/api_url_context"; // Global API URL context
 
 // Import shadcn/ui components (adjust import paths as needed)
 import { Button } from "@/components/ui/button";
@@ -86,7 +87,7 @@ export function HistoryMarkingForm({
     };
 
     try {
-      const response = await fetch("https://final-year-project-osce-simulator-1.onrender.com/api/evaluate-history/", {
+      const response = await fetch("${apiUrl}/api/evaluate-history/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { Chat } from "@/components/chat_askquestion";
 import { Providers } from "@/components/providers";
 import { HistoryMarkingForm } from "@/components/history_marking_form";
+import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
 
 interface HistoryData {
   PC: string;
@@ -22,7 +23,7 @@ export default function ChatPage() {
   const [historyLoadedAt, setHistoryLoadedAt] = useState<number | null>(null);
   const [questionsCount, setQuestionsCount] = useState<number>(0); // Update this as ask-question is hit.
   const hasFetchedRef = useRef(false);
-
+  const { apiUrl } = useApiUrl();
   useEffect(() => {
     if (hasFetchedRef.current) return;
     hasFetchedRef.current = true;
@@ -30,7 +31,7 @@ export default function ChatPage() {
     const fetchHistory = async () => {
       setLoading(true);
       try {
-        const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/generate-history/", {
+        const res = await fetch(`${apiUrl}/generate-history/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

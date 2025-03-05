@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
 
 interface Question {
   question: string;
@@ -28,12 +29,12 @@ export function HistoryAnswerForm({ history }: HistoryAnswerFormProps) {
   const { register, handleSubmit } = useForm<AnswersFormValues>();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
+  const { apiUrl } = useApiUrl();
   // Fetch questions using the provided history.
   const fetchQuestions = async () => {
     setLoading(true);
     try {
-      const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/generate-questions/", {
+      const res = await fetch(`${apiUrl}/generate-questions/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ history }),
@@ -68,7 +69,7 @@ export function HistoryAnswerForm({ history }: HistoryAnswerFormProps) {
         user_answer: user_answer,
       };
       console.log(`Comparing answer for question ${index + 1}:`, payload);
-      return fetch("https://final-year-project-osce-simulator-1.onrender.com/api/compare-answer/", {
+      return fetch("${apiUrl}/api/compare-answer/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -13,6 +13,7 @@ import { getAuthSession } from '@/auth.server';
 import SignInClient from "./sign-in/sign-in-client";
 import { AppSidebar } from "@/components/app-sidebar"; // Composed sidebar
 import { ThemeToggle } from "@/components/theme-toggle"; // Dark mode toggle component
+import { ApiUrlProvider } from "@/config/contexts/api_url_context"; // Global API URL context
 
 export const metadata: Metadata = {
   title: {
@@ -44,26 +45,28 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       <head />
       <body className={cn("font-sans antialiased", fontSans.variable, fontMono.variable)}>
         <Toaster />
-        <Providers attribute="class" defaultTheme="system" enableSystem>
-          {!session?.user ? (
-            <SignInClient />
-          ) : (
-            <div className="flex min-h-screen w-full">
-              <AppSidebar session={session} />
-              <div className="flex flex-col flex-1">
-                <Header />
-                <main className="flex flex-1 flex-col bg-muted/50">
-                  {children}
-                </main>
+        <ApiUrlProvider>
+          <Providers attribute="class" defaultTheme="system" enableSystem>
+            {!session?.user ? (
+              <SignInClient />
+            ) : (
+              <div className="flex min-h-screen w-full">
+                <AppSidebar session={session} />
+                <div className="flex flex-col flex-1">
+                  <Header />
+                  <main className="flex flex-1 flex-col bg-muted/50">
+                    {children}
+                  </main>
+                </div>
               </div>
+            )}
+            <TailwindIndicator />
+            {/* Dark mode toggle fixed at bottom right */}
+            <div className="fixed bottom-4 right-4 z-50">
+              <ThemeToggle />
             </div>
-          )}
-          <TailwindIndicator />
-          {/* Dark mode toggle fixed at bottom right */}
-          <div className="fixed bottom-4 right-4 z-50">
-            <ThemeToggle />
-          </div>
-        </Providers>
+          </Providers>
+        </ApiUrlProvider>
       </body>
     </html>
   );

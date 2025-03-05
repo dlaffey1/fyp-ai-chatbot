@@ -20,6 +20,7 @@ import { Toaster } from "react-hot-toast";
 import { Chat } from "@/components/chat_askquestion";
 import { Providers } from "@/components/providers";
 import { HistoryAnswerForm } from "@/components/history_answer_form";
+import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
 
 interface HistoryData {
   PC: string;
@@ -48,12 +49,14 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
   const hasFetchedRef = useRef(false);
+  const { apiUrl } = useApiUrl();
+
 
   // Fetch condition types from the backend.
   useEffect(() => {
     const fetchConditions = async () => {
       try {
-        const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/get-conditions/");
+        const res = await fetch(`${apiUrl}/get-conditions/`);
         if (!res.ok) throw new Error("Failed to fetch conditions");
         const data = await res.json();
         setConditions(data.conditions || []);
@@ -72,7 +75,8 @@ export default function HistoryPage() {
     setOpen(false);
 
     try {
-      const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/generate-history/", {
+      console.log("fetching from " + `${apiUrl}/generate-questions/`);
+      const res = await fetch(`${apiUrl}/generate-history/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ condition }),

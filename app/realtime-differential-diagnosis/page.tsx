@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Toaster } from "react-hot-toast";
 import { ThemeToggle } from "@/components/theme-toggle";
 import VoiceActivityDialog from "@/components/voice_activity_dialog"; // adjust the import path as needed
+import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
 
 interface HistoryData {
   PC: string;
@@ -25,13 +26,14 @@ export default function RealtimeChatPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const { apiUrl } = useApiUrl();
 
   // On mount, fetch the structured patient history.
   useEffect(() => {
     async function fetchPatientHistory() {
       try {
         const res = await fetch(
-          "https://final-year-project-osce-simulator-1.onrender.com/generate-history/",
+          `${apiUrl}/generate-history/`,
           { method: "POST" }
         );
         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
@@ -78,7 +80,7 @@ SR: ${history.SR}`;
           try {
             const formData = new FormData();
             formData.append("file", audioBlob, "recording.wav");
-            const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/realtime/transcribe/", {
+            const res = await fetch(`${apiUrl}/realtime/transcribe/`, {
               method: "POST",
               body: formData,
             });
@@ -124,7 +126,7 @@ SR: ${history.SR}`;
     const updatedMessages = [...messages, { role: "user" as const, content: newMessage }];
     setMessages(updatedMessages);
     try {
-      const res = await fetch("https://final-year-project-osce-simulator-1.onrender.com/realtime/chat/", {
+      const res = await fetch(`${apiUrl}/realtime/chat/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedMessages, history: patientHistory }),
