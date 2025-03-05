@@ -1,26 +1,13 @@
+// app/history/page.tsx
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { Chat } from "@/components/chat_askquestion";
 import { Providers } from "@/components/providers";
+import { Chat } from "@/components/chat_askquestion";
 import { HistoryAnswerForm } from "@/components/history_answer_form";
-import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
+import { useApiUrl } from "@/config/contexts/api_url_context";
+import ConditionSelector from "@/components/condition-selector";
 
 interface HistoryData {
   PC: string;
@@ -43,39 +30,16 @@ const SECTION_NAMES: { [key: string]: string } = {
 };
 
 export default function HistoryPage() {
-  const [conditions, setConditions] = useState<string[]>([]);
   const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
-  const hasFetchedRef = useRef(false);
   const { apiUrl } = useApiUrl();
 
-
-  // Fetch condition types from the backend.
-  useEffect(() => {
-    const fetchConditions = async () => {
-      try {
-        const res = await fetch(`${apiUrl}/get-conditions/`);
-        if (!res.ok) throw new Error("Failed to fetch conditions");
-        const data = await res.json();
-        setConditions(data.conditions || []);
-      } catch (err) {
-        console.error("Error fetching conditions:", err);
-      }
-    };
-
-    fetchConditions();
-  }, []);
-
-  // Fetch history when a condition is selected.
-  const handleSelectCondition = async (condition: string) => {
+  // When a condition is selected via the nested navigation, fetch the corresponding history.
+  const handleConditionSelect = async (condition: string) => {
     setSelectedCondition(condition);
     setLoading(true);
-    setOpen(false);
-
     try {
-      console.log("fetching from " + `${apiUrl}/generate-questions/`);
       const res = await fetch(`${apiUrl}/generate-history/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -97,32 +61,9 @@ export default function HistoryPage() {
       <div className="flex flex-col min-h-screen">
         <Toaster />
 
-        {/* Condition Selector */}
+        {/* Nested Condition Selector */}
         <div className="mb-6 flex flex-col items-center">
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" role="combobox" aria-expanded={open} className="w-[250px] justify-between">
-                {selectedCondition ? conditions.find((c) => c === selectedCondition) : "Select a Condition..."}
-                <ChevronsUpDown className="opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[250px] p-0">
-              <Command>
-                <CommandInput placeholder="Search conditions..." className="h-9" />
-                <CommandList>
-                  <CommandEmpty>No condition found.</CommandEmpty>
-                  <CommandGroup>
-                    {conditions.map((condition) => (
-                      <CommandItem key={condition} value={condition} onSelect={() => handleSelectCondition(condition)}>
-                        {condition}
-                        <Check className={selectedCondition === condition ? "opacity-100 ml-auto" : "opacity-0"} />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <ConditionSelector onConditionSelect={handleConditionSelect} />
         </div>
 
         {/* Loading Spinner */}

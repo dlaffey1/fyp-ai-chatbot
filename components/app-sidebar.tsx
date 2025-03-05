@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Home, Calendar, User, DollarSign } from "lucide-react"; // Added DollarSign for pricing
-
+import { Home, Calendar, User, DollarSign, BarChart2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch"; // Import your custom Switch
 import {
   Sidebar,
   SidebarContent,
@@ -116,6 +116,17 @@ export function AppSidebar({ session }: { session?: any }) {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <Link
+                      href="/results"
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
+                    >
+                      <BarChart2 className="mr-2" />
+                      <span>Results</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
                       href="/pricing"
                       className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
                     >
@@ -142,12 +153,16 @@ export function AppSidebar({ session }: { session?: any }) {
 
         {/* Sidebar Footer with Profile Icon, Sign Out, and API URL Toggle */}
         <SidebarFooter className="border-t p-4">
-          <button
-            onClick={toggleApiUrl}
-            className="px-4 py-2 bg-gray-200 text-gray-900 rounded-md mb-4"
-          >
-            Switch API: {apiUrl.includes("localhost") ? "Local" : "Production"}
-          </button>
+          <div className="flex items-center gap-2 mb-4">
+            {/* Use the Switch component to toggle API */}
+            <Switch
+              checked={apiUrl.includes("localhost")}
+              onCheckedChange={toggleApiUrl}
+            />
+            <span className="text-sm text-sidebar-foreground">
+              {apiUrl.includes("localhost") ? "Local" : "Production"}
+            </span>
+          </div>
           {session?.user ? (
             <div className="flex items-center justify-between">
               <Link href="/profile">

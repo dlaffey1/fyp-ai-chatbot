@@ -1,0 +1,129 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useApiUrl } from "@/config/contexts/api_url_context";
+
+interface ConditionSelectorProps {
+  onConditionSelect: (condition: string) => void;
+}
+
+export default function ConditionSelector({ onConditionSelect }: ConditionSelectorProps) {
+  const [generalCategories, setGeneralCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [conditions, setConditions] = useState<string[]>([]);
+  const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const { apiUrl } = useApiUrl();
+
+  // Fetch general categories from your backend endpoint.
+  useEffect(() => {
+    const fetchCategories = async () => {
+      console.log("Fetching general categories from:", `${apiUrl}/get_general_condition_categories/`);
+      try {
+        const res = await fetch(`${apiUrl}/get_general_condition_categories/`);
+        if (!res.ok) throw new Error("Failed to fetch general categories");
+        const data = await res.json();
+        console.log("General categories fetched:", data.categories);
+        setGeneralCategories(data.categories || []);
+      } catch (err) {
+        console.error("Error fetching general categories:", err);
+      }
+    };
+    fetchCategories();
+  }, [apiUrl]);
+
+  // When a general category is selected, fetch specific conditions.
+  const handleSelectGeneralCategory = async (category: string) => {
+    console.log("General category selected:", category);
+    setSelectedCategory(category);
+    setSelectedCondition(null);
+    try {
+      const url = `${apiUrl}/get_conditions_by_category/?category=${encodeURIComponent(category)}`;
+      console.log("Fetching conditions for category from:", url);
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch conditions for category");
+      const data = await res.json();
+      console.log("Conditions fetched for category:", data.conditions);
+      setConditions(data.conditions || []);
+    } catch (err) {
+      console.error("Error fetching conditions for category:", err);
+      setConditions([]);
+    }
+  };
+
+  // When a specific condition is selected, notify the parent.
+  const handleSelectCondition = (condition: string) => {
+    console.log("Specific condition selected:", condition);
+    setSelectedCondition(condition);
+    setOpen(false);
+    onConditionSelect(condition);
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      <Popover open={open} onOpenChange={(value) => { 
+          console.log("Popover open state changed:", value);
+          setOpen(value);
+      }}>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-[250px] justify-between">
+            {selectedCondition ||
+              (selectedCategory ? `Category: ${selectedCategory}` : "Select a Condition...")}
+            <ChevronsUpDown className="opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[250px] p-0">
+          <Command>
+            <CommandInput placeholder="Search..." className="h-9" />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              {!selectedCategory && (
+                <CommandGroup heading="General Categories">
+                  {generalCategories.map((category) => (
+                    <CommandItem key={category} onSelect={() => handleSelectGeneralCategory(category)}>
+                      {category}
+                      <Check className={selectedCategory === category ? "opacity-100 ml-auto" : "opacity-0 ml-auto"} />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+              {selectedCategory && (
+                <CommandGroup heading={`Conditions in ${selectedCategory}`}>
+                  {conditions.map((condition) => (
+                    <CommandItem key={condition} onSelect={() => handleSelectCondition(condition)}>
+                      {condition}
+                      <Check className={selectedCondition === condition ? "opacity-100 ml-auto" : "opacity-0 ml-auto"} />
+                    </CommandItem>
+                  ))}
+                  <CommandItem onSelect={() => { 
+                    console.log("Going back to general categories");
+                    setSelectedCategory(null);
+                    setConditions([]); 
+                  }}>
+                    ← Back to Categories
+                  </CommandItem>
+                </CommandGroup>
+              )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}

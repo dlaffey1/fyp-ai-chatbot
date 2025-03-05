@@ -10,10 +10,10 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/header-server";
 import { getAuthSession } from '@/auth.server';
-import SignInClient from "./sign-in/sign-in-client";
-import { AppSidebar } from "@/components/app-sidebar"; // Composed sidebar
-import { ThemeToggle } from "@/components/theme-toggle"; // Dark mode toggle component
-import { ApiUrlProvider } from "@/config/contexts/api_url_context"; // Global API URL context
+import { AppSidebar } from "@/components/app-sidebar";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { ApiUrlProvider } from "@/config/contexts/api_url_context";
+import AuthLayoutWrapper from "@/components/auth-layout-wrapper";
 
 export const metadata: Metadata = {
   title: {
@@ -47,19 +47,23 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <Toaster />
         <ApiUrlProvider>
           <Providers attribute="class" defaultTheme="system" enableSystem>
-            {!session?.user ? (
-              <SignInClient />
-            ) : (
-              <div className="flex min-h-screen w-full">
-                <AppSidebar session={session} />
-                <div className="flex flex-col flex-1">
-                  <Header />
-                  <main className="flex flex-1 flex-col bg-muted/50">
-                    {children}
-                  </main>
+            {/* Wrap the content in AuthLayoutWrapper so that routes like /sign-up render properly */}
+            <AuthLayoutWrapper session={session}>
+              {session?.user ? (
+                <div className="flex min-h-screen w-full">
+                  <AppSidebar session={session} />
+                  <div className="flex flex-col flex-1">
+                    <Header />
+                    <main className="flex flex-1 flex-col bg-muted/50">
+                      {children}
+                    </main>
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : (
+                // For non-authenticated users on auth routes like /sign-up, the children will render.
+                <>{children}</>
+              )}
+            </AuthLayoutWrapper>
             <TailwindIndicator />
             {/* Dark mode toggle fixed at bottom right */}
             <div className="fixed bottom-4 right-4 z-50">
