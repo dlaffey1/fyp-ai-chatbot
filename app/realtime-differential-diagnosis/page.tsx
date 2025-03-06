@@ -26,8 +26,8 @@ export default function RealtimeChatPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const { apiUrl } = useApiUrl();
 
+  const { apiUrl } = useApiUrl();
   // On mount, fetch the structured patient history.
   useEffect(() => {
     async function fetchPatientHistory() {

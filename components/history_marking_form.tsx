@@ -54,6 +54,7 @@ export function HistoryMarkingForm({
   questionsCount,
 }: HistoryMarkingFormProps) {
   const router = useRouter();
+  const { apiUrl } = useApiUrl();
   const form = useForm<HistoryFormValues>({
     resolver: zodResolver(historySchema),
     defaultValues: {
