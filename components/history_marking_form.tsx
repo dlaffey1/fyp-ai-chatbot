@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
+import { useApiUrl } from "@/config/contexts/api_url_context"; // Import the hook
 
 // Import shadcn/ui components (adjust import paths as needed)
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-const { apiUrl } = useApiUrl();
+
 // Define schema.
 const historySchema = z.object({
   PC: z.string().nonempty("Presenting Complaint is required"),
@@ -54,7 +54,9 @@ export function HistoryMarkingForm({
   questionsCount,
 }: HistoryMarkingFormProps) {
   const router = useRouter();
+  // Call the hook inside the component function
   const { apiUrl } = useApiUrl();
+  
   const form = useForm<HistoryFormValues>({
     resolver: zodResolver(historySchema),
     defaultValues: {
