@@ -94,9 +94,11 @@ export default function HistoryPage() {
                   {SECTION_NAMES[key] || key}
                 </h2>
                 <p className="leading-normal text-muted-foreground">
-                  {typeof value === "object"
+                  {typeof value === "object" && value !== null
                     ? JSON.stringify(value, null, 2)
-                    : value ?? ""}
+                    : value !== undefined
+                    ? String(value)
+                    : ""}
                 </p>
               </div>
             ))}
