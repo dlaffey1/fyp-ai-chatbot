@@ -40,7 +40,7 @@ export function HistoryAnswerForm({
   const [loading, setLoading] = useState<boolean>(false);
   const { apiUrl } = useApiUrl();
 
-  // Helper function to parse score values (e.g., convert "100%" to 100)
+  // Helper: convert score string like "100%" to number 100.
   const parseScore = (score: any): number => {
     if (typeof score === "string") {
       return parseFloat(score.replace("%", ""));
@@ -68,7 +68,7 @@ export function HistoryAnswerForm({
     }
   };
 
-  // Save session data to Supabase with all details.
+  // Save session data to Supabase.
   const saveSessionData = async (
     history: any,
     conversation: any,
@@ -114,7 +114,7 @@ export function HistoryAnswerForm({
     if (history) {
       fetchQuestions();
     }
-  }, [history]);
+  }, [history, apiUrl]);
 
   const onSubmit = async (data: AnswersFormValues) => {
     console.log("User answers:", data);
@@ -140,8 +140,8 @@ export function HistoryAnswerForm({
             question: q.question,
             expected_answer: q.answer,
             user_answer,
-            score: parseScore(result.score), // now numeric
-            feedback: result.details, // rename result.details to feedback
+            score: parseScore(result.score), // numeric score
+            feedback: result.details, // renamed details to feedback
           };
         });
     });
@@ -199,7 +199,7 @@ export function HistoryAnswerForm({
       {!loading &&
         questions.map((q, index) => (
           <div key={index} className="border p-4 rounded">
-            <p className="font-semibold mb-2">
+            <p className="mb-2 font-semibold">
               Q{index + 1}: {q.question}
             </p>
             <p className="mb-2 text-sm text-gray-500">

@@ -14,15 +14,15 @@ export default function AnswersResultPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-3xl font-bold mb-6">Your Answer Comparisons</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <h1 className="mb-6 font-bold text-3xl">Your Answer Comparisons</h1>
       {comparisons.length === 0 ? (
         <p className="text-lg">No comparisons to display.</p>
       ) : (
         <div className="w-full max-w-2xl space-y-6">
           {comparisons.map((comp: any, index: number) => (
             <div key={index} className="border p-6 rounded shadow">
-              <h2 className="text-2xl font-semibold mb-2">
+              <h2 className="mb-2 text-2xl font-semibold">
                 Question {index + 1}
               </h2>
               <p className="mb-1">
@@ -38,7 +38,7 @@ export default function AnswersResultPage() {
                 <strong>Score:</strong> {comp.score}
               </p>
               <p className="whitespace-pre-wrap">
-                <strong>Feedback:</strong> {comp.details}
+                <strong>Feedback:</strong> {comp.feedback}
               </p>
             </div>
           ))}
