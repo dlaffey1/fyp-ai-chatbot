@@ -96,7 +96,7 @@ export default function HistoryPage() {
                 <p className="leading-normal text-muted-foreground">
                   {typeof value === "object"
                     ? JSON.stringify(value, null, 2)
-                    : value}
+                    : value ?? ""}
                 </p>
               </div>
             ))}
@@ -112,19 +112,23 @@ export default function HistoryPage() {
         )}
 
         {/* History Answer Form */}
-        {!loading && history && sessionStart && selectedCategory && selectedCondition && (
-          <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
-            <h2 className="text-xl font-semibold text-center mb-4">
-              Answer the Questions
-            </h2>
-            <HistoryAnswerForm
-              history={JSON.stringify(history)}
-              sessionStart={sessionStart}
-              category={selectedCategory}
-              icdCode={selectedCondition}
-            />
-          </div>
-        )}
+        {!loading &&
+          history &&
+          sessionStart &&
+          selectedCategory &&
+          selectedCondition && (
+            <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
+              <h2 className="text-xl font-semibold text-center mb-4">
+                Answer the Questions
+              </h2>
+              <HistoryAnswerForm
+                history={JSON.stringify(history)}
+                sessionStart={sessionStart}
+                category={selectedCategory}
+                icdCode={selectedCondition}
+              />
+            </div>
+          )}
       </div>
     </Providers>
   );
