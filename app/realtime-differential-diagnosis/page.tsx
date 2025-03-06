@@ -52,7 +52,7 @@ SR: ${history.SR}`;
         const systemMessage = { role: "system" as const, content: systemContent };
         const initialAssistant = {
           role: "assistant" as const,
-          content: "Hello, I'm John. How are you feeling today?",
+          content: "Hi doctor, how can I help you today?",
         };
         setMessages([systemMessage, initialAssistant]);
       } catch (error) {
