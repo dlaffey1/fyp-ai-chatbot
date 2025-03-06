@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { useApiUrl } from "@/config/contexts/api_url_context";
 
 interface ConditionSelectorProps {
-  onConditionSelect: (condition: string) => void;
+  onConditionSelect: (selection: { category: string; condition: string }) => void;
 }
 
 export default function ConditionSelector({ onConditionSelect }: ConditionSelectorProps) {
@@ -72,7 +72,10 @@ export default function ConditionSelector({ onConditionSelect }: ConditionSelect
     console.log("Specific condition selected:", condition);
     setSelectedCondition(condition);
     setOpen(false);
-    onConditionSelect(condition);
+    // Call onConditionSelect with both values.
+    if (selectedCategory) {
+      onConditionSelect({ category: selectedCategory, condition });
+    }
   };
 
   return (
@@ -83,8 +86,11 @@ export default function ConditionSelector({ onConditionSelect }: ConditionSelect
       }}>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-[250px] justify-between">
-            {selectedCondition ||
-              (selectedCategory ? `Category: ${selectedCategory}` : "Select a Condition...")}
+            {selectedCondition
+              ? selectedCondition
+              : selectedCategory
+              ? `Category: ${selectedCategory}`
+              : "Select a Condition..."}
             <ChevronsUpDown className="opacity-50" />
           </Button>
         </PopoverTrigger>

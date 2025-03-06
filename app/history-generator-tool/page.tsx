@@ -1,4 +1,3 @@
-// app/history/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -30,13 +29,23 @@ const SECTION_NAMES: { [key: string]: string } = {
 };
 
 export default function HistoryPage() {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
-  const [history, setHistory] = useState<HistoryData | null>(null);
+  const [history, setHistory] = useState<HistoryData | any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [sessionStart, setSessionStart] = useState<number | null>(null);
   const { apiUrl } = useApiUrl();
 
-  // When a condition is selected via the nested navigation, fetch the corresponding history.
-  const handleConditionSelect = async (condition: string) => {
+  // Expecting an object { category, condition } from ConditionSelector.
+  const handleConditionSelect = async ({
+    category,
+    condition,
+  }: {
+    category: string;
+    condition: string;
+  }) => {
+    console.log("Condition selected:", { category, condition });
+    setSelectedCategory(category);
     setSelectedCondition(condition);
     setLoading(true);
     try {
@@ -48,6 +57,8 @@ export default function HistoryPage() {
       if (!res.ok) throw new Error("Failed to fetch history");
       const data = await res.json();
       setHistory(data.history);
+      // Record session start time once history is loaded.
+      setSessionStart(Date.now());
     } catch (err) {
       console.error("Error fetching history:", err);
       setHistory(null);
@@ -61,7 +72,7 @@ export default function HistoryPage() {
       <div className="flex flex-col min-h-screen">
         <Toaster />
 
-        {/* Nested Condition Selector */}
+        {/* Condition Selector */}
         <div className="mb-6 flex flex-col items-center">
           <ConditionSelector onConditionSelect={handleConditionSelect} />
         </div>
@@ -79,8 +90,14 @@ export default function HistoryPage() {
             <h2 className="text-lg font-semibold text-center">Patient History</h2>
             {Object.entries(history).map(([key, value]) => (
               <div key={key} className="rounded-lg border p-8">
-                <h2 className="mb-2 text-lg font-semibold">{SECTION_NAMES[key] || key}</h2>
-                <p className="leading-normal text-muted-foreground">{value}</p>
+                <h2 className="mb-2 text-lg font-semibold">
+                  {SECTION_NAMES[key] || key}
+                </h2>
+                <p className="leading-normal text-muted-foreground">
+                  {typeof value === "object"
+                    ? JSON.stringify(value, null, 2)
+                    : value}
+                </p>
               </div>
             ))}
           </div>
@@ -88,14 +105,24 @@ export default function HistoryPage() {
 
         {/* Chat Section */}
         {!loading && history && (
-          <Chat className="mx-auto max-w-2xl px-4 mt-4" history={JSON.stringify(history)} />
+          <Chat
+            className="mx-auto max-w-2xl px-4 mt-4"
+            history={JSON.stringify(history)}
+          />
         )}
 
-        {/* History Answer Form – Only fetch questions once history is loaded */}
-        {!loading && history && (
+        {/* History Answer Form */}
+        {!loading && history && sessionStart && selectedCategory && selectedCondition && (
           <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
-            <h2 className="text-xl font-semibold text-center mb-4">Answer the Questions</h2>
-            <HistoryAnswerForm history={JSON.stringify(history)} />
+            <h2 className="text-xl font-semibold text-center mb-4">
+              Answer the Questions
+            </h2>
+            <HistoryAnswerForm
+              history={JSON.stringify(history)}
+              sessionStart={sessionStart}
+              category={selectedCategory}
+              icdCode={selectedCondition}
+            />
           </div>
         )}
       </div>

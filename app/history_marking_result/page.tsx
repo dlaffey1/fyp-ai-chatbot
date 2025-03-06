@@ -38,7 +38,7 @@ export default function AnswersResultPage() {
                 <strong>Score:</strong> {comp.score}
               </p>
               <p className="whitespace-pre-wrap">
-                <strong>Feedback:</strong> {comp.feedback}
+                <strong>Feedback:</strong> {comp.details}
               </p>
             </div>
           ))}

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
+import { useApiUrl } from "@/config/contexts/api_url_context";
+import { supabase } from "@/lib/supabaseClient";
 
 interface Question {
   question: string;
@@ -22,14 +23,31 @@ type AnswersFormValues = {
 
 interface HistoryAnswerFormProps {
   history: string; // Patient history as a JSON string
+  sessionStart: number; // Timestamp when history was loaded
+  category: string; // Top-level category selected by the user
+  icdCode: string; // Specific condition (long title) selected by the user
 }
 
-export function HistoryAnswerForm({ history }: HistoryAnswerFormProps) {
+export function HistoryAnswerForm({
+  history,
+  sessionStart,
+  category,
+  icdCode,
+}: HistoryAnswerFormProps) {
   const router = useRouter();
   const { register, handleSubmit } = useForm<AnswersFormValues>();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { apiUrl } = useApiUrl();
+
+  // Helper function to parse score values (e.g., convert "100%" to 100)
+  const parseScore = (score: any): number => {
+    if (typeof score === "string") {
+      return parseFloat(score.replace("%", ""));
+    }
+    return score;
+  };
+
   // Fetch questions using the provided history.
   const fetchQuestions = async () => {
     setLoading(true);
@@ -50,17 +68,58 @@ export function HistoryAnswerForm({ history }: HistoryAnswerFormProps) {
     }
   };
 
-  // Fetch questions once history is available.
+  // Save session data to Supabase with all details.
+  const saveSessionData = async (
+    history: any,
+    conversation: any,
+    timeSpent: number,
+    questions: any,
+    answers: any,
+    q1Result: number,
+    q2Result: number,
+    q3Result: number,
+    q4Result: number,
+    overallGrade: number,
+    category: string,
+    icdCode: string
+  ) => {
+    try {
+      const { data, error } = await supabase.from("history_sessions").insert([
+        {
+          history: JSON.parse(history),
+          conversation, // For now, this is an empty array
+          time_spent: timeSpent,
+          questions,
+          answers,
+          q1_result: q1Result,
+          q2_result: q2Result,
+          q3_result: q3Result,
+          q4_result: q4Result,
+          overall_grade: overallGrade,
+          category,
+          icd_code: icdCode,
+        },
+      ]);
+      if (error) {
+        console.error("Error saving session data:", error);
+      } else {
+        console.log("Session data saved:", data);
+      }
+    } catch (error) {
+      console.error("Unexpected error saving to Supabase:", error);
+    }
+  };
+
   useEffect(() => {
     if (history) {
       fetchQuestions();
     }
   }, [history]);
 
-  // When the user submits the form:
   const onSubmit = async (data: AnswersFormValues) => {
     console.log("User answers:", data);
-    // For each question, call the compare_answer endpoint.
+    const timeSpent = Math.floor((Date.now() - sessionStart) / 1000);
+
     const comparePromises = questions.map((q, index) => {
       const user_answer = data[`q${index}`] || "";
       const payload = {
@@ -69,7 +128,7 @@ export function HistoryAnswerForm({ history }: HistoryAnswerFormProps) {
         user_answer: user_answer,
       };
       console.log(`Comparing answer for question ${index + 1}:`, payload);
-      return fetch("${apiUrl}/api/compare-answer/", {
+      return fetch(`${apiUrl}/api/compare-answer/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -81,7 +140,8 @@ export function HistoryAnswerForm({ history }: HistoryAnswerFormProps) {
             question: q.question,
             expected_answer: q.answer,
             user_answer,
-            ...result,
+            score: parseScore(result.score), // now numeric
+            feedback: result.details, // rename result.details to feedback
           };
         });
     });
@@ -89,7 +149,30 @@ export function HistoryAnswerForm({ history }: HistoryAnswerFormProps) {
     try {
       const comparisonResults = await Promise.all(comparePromises);
       console.log("All comparison results:", comparisonResults);
-      // Redirect to the answers result page with the aggregated comparison results.
+
+      const q1Result = comparisonResults[0]?.score || 0;
+      const q2Result = comparisonResults[1]?.score || 0;
+      const q3Result = comparisonResults[2]?.score || 0;
+      const q4Result = comparisonResults[3]?.score || 0;
+      const overallGrade = (q1Result + q2Result + q3Result + q4Result) / 4;
+
+      const userAnswers = data;
+
+      await saveSessionData(
+        history,
+        [],
+        timeSpent,
+        questions,
+        userAnswers,
+        q1Result,
+        q2Result,
+        q3Result,
+        q4Result,
+        overallGrade,
+        category,
+        icdCode
+      );
+
       router.push(
         `/history_marking_result?comparisons=${encodeURIComponent(
           JSON.stringify(comparisonResults)
