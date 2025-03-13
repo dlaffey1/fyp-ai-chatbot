@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Message } from "ai";
 import { nanoid } from "nanoid"; // <--- import a random ID generator
 import { toast } from "react-hot-toast";
@@ -15,6 +15,7 @@ export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
   history?: string | null; // The patient history passed from HistoryPage
   className?: string;
+  setConversationLogs?: Dispatch<SetStateAction<string>>;
 }
 
 /**

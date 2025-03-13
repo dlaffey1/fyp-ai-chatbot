@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Home, Calendar, User, DollarSign, BarChart2 } from "lucide-react";
+import { Home, Calendar, User, DollarSign, BarChart2, MessageSquare } from "lucide-react";
 import { Switch } from "@/components/ui/switch"; // Import your custom Switch
 import {
   Sidebar,
@@ -143,6 +143,18 @@ export function AppSidebar({ session }: { session?: any }) {
                     >
                       <User className="mr-2" />
                       <span>Sign In</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                {/* New Feedback Menu Item */}
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href="/feedback"
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
+                    >
+                      <MessageSquare className="mr-2" />
+                      <span>Feedback</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

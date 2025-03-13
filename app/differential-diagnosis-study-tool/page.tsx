@@ -19,11 +19,14 @@ interface HistoryData {
 
 export default function ChatPage() {
   const [history, setHistory] = useState<HistoryData | null>(null);
+  const [rightCondition, setRightCondition] = useState<string>(""); // New state for correct condition.
   const [loading, setLoading] = useState<boolean>(false);
   const [historyLoadedAt, setHistoryLoadedAt] = useState<number | null>(null);
   const [questionsCount, setQuestionsCount] = useState<number>(0); // Update this as ask-question is hit.
+  const [conversationLogs, setConversationLogs] = useState<string>(""); // Conversation log state.
   const hasFetchedRef = useRef(false);
   const { apiUrl } = useApiUrl();
+
   useEffect(() => {
     if (hasFetchedRef.current) return;
     hasFetchedRef.current = true;
@@ -43,6 +46,7 @@ export default function ChatPage() {
 
         const data = await res.json();
         setHistory(data.history);
+        setRightCondition(data.right_condition); // Extract and set the correct condition.
         // Record the time when the history is successfully loaded.
         setHistoryLoadedAt(Date.now());
       } catch (error) {
@@ -53,7 +57,7 @@ export default function ChatPage() {
     };
 
     fetchHistory();
-  }, []);
+  }, [apiUrl]);
 
   return (
     <Providers attribute="class" defaultTheme="system" enableSystem>
@@ -73,6 +77,8 @@ export default function ChatPage() {
             <Chat
               className="mx-auto max-w-2xl px-4 mt-4"
               history={history ? JSON.stringify(history) : ""}
+              // Optionally, you could pass a callback to update conversationLogs based on chat events.
+              setConversationLogs={setConversationLogs}
             />
             {/* Add the History Marking Form below the Chat section with increased bottom margin */}
             <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
@@ -81,6 +87,8 @@ export default function ChatPage() {
                   expectedHistory={JSON.stringify(history)}
                   historyLoadedAt={historyLoadedAt}
                   questionsCount={questionsCount}
+                  correctCondition={rightCondition}  // Pass the extracted correct condition.
+                  conversationLogs={conversationLogs}
                 />
               )}
             </div>
