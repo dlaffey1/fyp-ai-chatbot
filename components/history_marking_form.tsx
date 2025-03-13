@@ -19,7 +19,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
-// Define schema including the new guessedCondition field.
 const historySchema = z.object({
   PC: z.string().nonempty("Presenting Complaint is required"),
   HPC: z.string().optional(),
@@ -33,7 +32,6 @@ const historySchema = z.object({
 
 type HistoryFormValues = z.infer<typeof historySchema>;
 
-// Mapping keys to full labels (excluding guessedCondition).
 const fieldLabels: Record<keyof Omit<HistoryFormValues, "guessedCondition">, string> = {
   PC: "Presenting Complaint",
   HPC: "History of Presenting Complaint",
@@ -88,7 +86,6 @@ export function HistoryMarkingForm({
       `Systems Review: ${values.SR}`,
     ].join("\n");
 
-    // Include the correct condition (right_disease), conversation logs, and the guessed disease.
     const payload = {
       expected_history: expectedHistory,
       time_taken: timeTaken,
@@ -99,6 +96,9 @@ export function HistoryMarkingForm({
       guessed_condition: values.guessedCondition,
     };
 
+    // Log the payload before sending.
+    console.log("Sending evaluate_history payload:", payload);
+
     try {
       const response = await fetch(`${apiUrl}/api/evaluate-history/`, {
         method: "POST",
@@ -108,21 +108,23 @@ export function HistoryMarkingForm({
       const result = await response.json();
       console.log("Marking result:", result);
 
-      // Log whether decision tree and feedback were returned.
+      // Log extra parameters before decision tree branch check.
+      console.log("Before decision tree branch: conversation_logs:", conversationLogs);
+      console.log("Before decision tree branch: guessed_condition:", values.guessedCondition);
+      console.log("Before decision tree branch: right_disease:", correctCondition);
+
       if (result.decision_tree && result.decision_tree_feedback) {
         console.log("Decision tree and decision tree feedback returned successfully.");
       } else {
         console.log("Decision tree and/or feedback were not returned.", result);
       }
       
-      // Redirect with the entire result as a query parameter.
       router.push(`/marking-result?result=${encodeURIComponent(JSON.stringify(result))}`);
     } catch (error) {
       console.error("Error submitting history for marking:", error);
     }
   }
 
-  // Disable submission if guessedCondition is empty.
   const guessedConditionValue = form.watch("guessedCondition");
 
   return (
@@ -144,7 +146,6 @@ export function HistoryMarkingForm({
             )}
           />
         ))}
-        {/* New input field for guessed disease */}
         <FormField
           control={form.control}
           name="guessedCondition"
