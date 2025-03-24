@@ -16,14 +16,15 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@/public/*": ["./public/*"]  // ✅ Allows absolute imports for public assets
+      "@/public/*": ["./public/*"]
     },
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "downlevelIteration": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

@@ -2,7 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Home, Calendar, User, DollarSign, BarChart2, MessageSquare } from "lucide-react";
+import { 
+  Home, Calendar, User, DollarSign, BarChart2, MessageSquare 
+} from "lucide-react";
 import { Switch } from "@/components/ui/switch"; // Import your custom Switch
 import {
   Sidebar,
@@ -146,6 +148,7 @@ export function AppSidebar({ session }: { session?: any }) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+
                 {/* New Feedback Menu Item */}
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
@@ -155,6 +158,30 @@ export function AppSidebar({ session }: { session?: any }) {
                     >
                       <MessageSquare className="mr-2" />
                       <span>Feedback</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                {/* New Differential Diagnosis Study Tool Feedback Menu Item */}
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href="/differential-diagnosis-study-tool-feedback"
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
+                    >
+                      <MessageSquare className="mr-2" />
+                      <span>Differential Diagnosis Study Tool Feedback</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                {/* New Differential Diagnosis Study Tool Feedback Menu Item */}
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href="/history-generator-tool-profile"
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
+                    >
+                      <MessageSquare className="mr-2" />
+                      <span>DDx Study Tool Feedback</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
