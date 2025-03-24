@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { Chat } from "@/components/chat_askquestion";
 import { Providers } from "@/components/providers";
 import { HistoryMarkingForm } from "@/components/history_marking_form";
-import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
+import { useApiUrl } from "@/config/contexts/api_url_context";
 
 interface HistoryData {
   PC: string;
@@ -19,13 +19,18 @@ interface HistoryData {
 
 export default function ChatPage() {
   const [history, setHistory] = useState<HistoryData | null>(null);
-  const [rightCondition, setRightCondition] = useState<string>(""); // New state for correct condition.
+  // Store the mimic condition number (ICD code) returned by the API.
+  const [mimicConditionNumber, setMimicConditionNumber] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [historyLoadedAt, setHistoryLoadedAt] = useState<number | null>(null);
-  const [questionsCount, setQuestionsCount] = useState<number>(0); // Update this as ask-question is hit.
-  const [conversationLogs, setConversationLogs] = useState<string>(""); // Conversation log state.
+  const [questionsCount, setQuestionsCount] = useState<number>(0);
+  const [conversationLogs, setConversationLogs] = useState<string>("");
   const hasFetchedRef = useRef(false);
   const { apiUrl } = useApiUrl();
+
+  useEffect(() => {
+    console.log("Conversation logs updated:", conversationLogs);
+  }, [conversationLogs]);
 
   useEffect(() => {
     if (hasFetchedRef.current) return;
@@ -34,10 +39,12 @@ export default function ChatPage() {
     const fetchHistory = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${apiUrl}/generate-history/`, {
+        // Call the endpoint with "random": true to force random selection.
+        const res = await fetch(`${apiUrl}/generate-history-with-profile/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
+          body: JSON.stringify({ random: true }),
         });
 
         if (!res.ok) {
@@ -46,8 +53,7 @@ export default function ChatPage() {
 
         const data = await res.json();
         setHistory(data.history);
-        setRightCondition(data.right_condition); // Extract and set the correct condition.
-        // Record the time when the history is successfully loaded.
+        setMimicConditionNumber(data.right_condition);
         setHistoryLoadedAt(Date.now());
       } catch (error) {
         console.error("Error fetching history:", error);
@@ -63,31 +69,25 @@ export default function ChatPage() {
     <Providers attribute="class" defaultTheme="system" enableSystem>
       <div className="flex flex-col min-h-screen">
         <Toaster />
-
-        {/* Show Loading Spinner */}
         {loading && (
           <div className="flex justify-center items-center min-h-screen">
             <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
           </div>
         )}
-
-        {/* Chat section (only visible when history is loaded) */}
-        {!loading && (
+        {!loading && history && (
           <>
             <Chat
               className="mx-auto max-w-2xl px-4 mt-4"
-              history={history ? JSON.stringify(history) : ""}
-              // Optionally, you could pass a callback to update conversationLogs based on chat events.
+              history={JSON.stringify(history)}
               setConversationLogs={setConversationLogs}
             />
-            {/* Add the History Marking Form below the Chat section with increased bottom margin */}
             <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
               {history && historyLoadedAt && (
                 <HistoryMarkingForm
                   expectedHistory={JSON.stringify(history)}
                   historyLoadedAt={historyLoadedAt}
                   questionsCount={questionsCount}
-                  correctCondition={rightCondition}  // Pass the extracted correct condition.
+                  correctCondition={mimicConditionNumber}
                   conversationLogs={conversationLogs}
                 />
               )}

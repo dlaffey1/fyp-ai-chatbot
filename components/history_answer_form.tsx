@@ -26,6 +26,7 @@ interface HistoryAnswerFormProps {
   sessionStart: number; // Timestamp when history was loaded
   category: string; // Top-level category selected by the user
   icdCode: string; // Specific condition (long title) selected by the user
+  conversationLogs: string;
 }
 
 export function HistoryAnswerForm({

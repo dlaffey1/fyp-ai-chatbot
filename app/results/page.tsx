@@ -1,4 +1,5 @@
 import { OsceResultPerformanceChart } from "@/components/osce-result-performance-charts";
+import { OsceResultPerformanceChart } from "@/components/osce-result-performance-charts";
 
 export default function ResultsPage() {
   return (

@@ -80,7 +80,7 @@ SR: ${history.SR}`;
           try {
             const formData = new FormData();
             formData.append("file", audioBlob, "recording.wav");
-            const res = await fetch(`${apiUrl}/realtime/transcribe/`, {
+            const res = await fetch(`${apiUrl}/realtime-endpoints/transcribe/`, {
               method: "POST",
               body: formData,
             });
@@ -126,7 +126,7 @@ SR: ${history.SR}`;
     const updatedMessages = [...messages, { role: "user" as const, content: newMessage }];
     setMessages(updatedMessages);
     try {
-      const res = await fetch(`${apiUrl}/realtime/chat/`, {
+      const res = await fetch(`${apiUrl}/realtime-endpoints/chat/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedMessages, history: patientHistory }),

@@ -1,15 +1,15 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
-import { Message } from "ai";
-import { nanoid } from "nanoid"; // <--- import a random ID generator
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
+import { nanoid } from "nanoid";
 import { toast } from "react-hot-toast";
-
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat-list";
 import { ChatPanel } from "@/components/chat-panel";
 import { ChatScrollAnchor } from "@/components/chat-scroll-anchor";
 import { EmptyScreen } from "@/components/empty-screen";
+import { useApiUrl } from "@/config/contexts/api_url_context"; // Use API URL from context
 
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
@@ -18,29 +18,35 @@ export interface ChatProps extends React.ComponentProps<"div"> {
   setConversationLogs?: Dispatch<SetStateAction<string>>;
 }
 
-/**
- * A custom Chat that:
- *  - Maintains local messages
- *  - Takes user input
- *  - Calls /ask-question/ with { question, history }
- */
 export function Chat_askquestion({
   initialMessages = [],
   history = null,
   className,
+  setConversationLogs, // optional callback to update conversation logs in parent
 }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { apiUrl } = useApiUrl(); // Get API base URL from context
+
+  // Update conversation logs every time messages change.
+  useEffect(() => {
+    if (setConversationLogs) {
+      const logs = messages
+        .map((msg) => `${msg.role}: ${msg.content}`)
+        .join("\n");
+      setConversationLogs(logs);
+    }
+  }, [messages, setConversationLogs]);
 
   async function handleSubmit(userInput: string) {
     if (!userInput.trim()) return;
 
-    // 1) Add user message with a random "id"
+    // Add user message with a random "id"
     setMessages((prev) => [
       ...prev,
       {
-        id: nanoid(),            // <-- Provide an ID
+        id: nanoid(),
         role: "user",
         content: userInput,
       },
@@ -53,10 +59,10 @@ export function Chat_askquestion({
       question: userInput,
       history: history ?? "",
     };
-    console.log("Sending request to /ask-question/:", payload);
+    console.log("Sending request to /ask-question/ with payload:", payload);
 
     try {
-      const response = await fetch("https://final-year-project-osce-simulator-1.onrender.com/ask-question/", {
+      const response = await fetch(`${apiUrl}/ask-question/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -69,26 +75,15 @@ export function Chat_askquestion({
       const data = await response.json();
       console.log("Received:", data);
 
-      // 3) Append AI answer
-      if (data.answer) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: nanoid(),         // also give the AI message an ID
-            role: "assistant",
-            content: data.answer,
-          },
-        ]);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: nanoid(),
-            role: "assistant",
-            content: "No response received.",
-          },
-        ]);
-      }
+      // Append the AI answer
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: nanoid(),
+          role: "assistant",
+          content: data.answer || "No response received.",
+        },
+      ]);
     } catch (error: any) {
       console.error("Error sending question:", error);
       toast.error(`Failed to get a response: ${error.message}`);

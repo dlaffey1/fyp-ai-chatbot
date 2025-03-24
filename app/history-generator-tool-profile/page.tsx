@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { Providers } from "@/components/providers";
 import { Chat } from "@/components/chat_askquestion";
-import { HistoryAnswerForm } from "@/components/history_answer_form";
+import { Providers } from "@/components/providers";
+import { HistoryMarkingForm } from "@/components/history_marking_form";
 import { useApiUrl } from "@/config/contexts/api_url_context";
 
 interface HistoryData {
@@ -42,14 +42,22 @@ const MEDICAL_CATEGORIES = [
   "other",
 ];
 
-export default function HistoryPage() {
+export default function ChatPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [conditions, setConditions] = useState<string[]>([]);
-  const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
+  // We'll store the mimic condition number returned from the API here.
+  const [mimicConditionNumber, setMimicConditionNumber] = useState<string>("");
   const [history, setHistory] = useState<HistoryData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [sessionStart, setSessionStart] = useState<number | null>(null);
+  const [conversationLogs, setConversationLogs] = useState<string>(""); // Conversation log state.
+  const hasFetchedRef = useRef(false);
   const { apiUrl } = useApiUrl();
+
+  // Log conversation logs changes for debugging.
+  useEffect(() => {
+    console.log("Conversation logs updated:", conversationLogs);
+  }, [conversationLogs]);
 
   /** Fetch conditions when category is selected */
   useEffect(() => {
@@ -61,15 +69,16 @@ export default function HistoryPage() {
         const res = await fetch(
           `${apiUrl}/get_conditions_by_category_profile/?category=${selectedCategory}`
         );
-
         if (!res.ok) throw new Error(`API responded with status ${res.status}`);
-
         const data = await res.json();
         const cleanedConditions: string[] = (data.conditions || [])
-          .filter((condition: unknown): condition is string => typeof condition === "string" && condition.trim() !== "")
-          .map((condition: string) => condition.replace(/[\u4e00-\u9fa5]/g, "").trim());
-
-        setConditions([...new Set(cleanedConditions)]); // Ensure unique values
+          .filter((condition: unknown): condition is string =>
+            typeof condition === "string" && condition.trim() !== ""
+          )
+          .map((condition: string) =>
+            condition.replace(/[\u4e00-\u9fa5]/g, "").trim()
+          );
+        setConditions([...new Set(cleanedConditions)]); // Ensure unique values.
       } catch (error) {
         console.error("Error fetching conditions:", error);
       }
@@ -80,13 +89,13 @@ export default function HistoryPage() {
 
   /** Handle condition selection and generate patient history */
   const handleConditionSelect = async (condition: string) => {
-    setSelectedCondition(condition);
     setLoading(true);
-
     try {
-      const res = await fetch(`${apiUrl}/generate-history/`, {
+      // Call the endpoint with the chosen condition.
+      const res = await fetch(`${apiUrl}/generate-history-with-profile/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // Send the condition. If empty, backend randomly selects one.
         body: JSON.stringify({ condition }),
       });
       if (!res.ok) throw new Error("Failed to fetch history");
@@ -94,6 +103,8 @@ export default function HistoryPage() {
       const data = await res.json();
       setHistory(data.history);
       setSessionStart(Date.now());
+      // Here, we update mimicConditionNumber with the value from data.right_condition.
+      setMimicConditionNumber(data.right_condition);
     } catch (err) {
       console.error("Error fetching history:", err);
       setHistory(null);
@@ -117,8 +128,8 @@ export default function HistoryPage() {
             value={selectedCategory || ""}
             onChange={(e) => {
               setSelectedCategory(e.target.value);
-              setSelectedCondition(null);
               setHistory(null);
+              setMimicConditionNumber("");
             }}
           >
             <option value="">-- Select a category --</option>
@@ -134,12 +145,14 @@ export default function HistoryPage() {
           </label>
           <select
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            value={selectedCondition || ""}
+            value={mimicConditionNumber || ""}
             onChange={(e) => handleConditionSelect(e.target.value)}
             disabled={!conditions.length}
           >
             <option value="">-- Select a condition --</option>
             {conditions.map((condition) => (
+              // Display the condition name for selection,
+              // but the endpoint will return the mimic condition number.
               <option key={condition} value={condition}>
                 {condition}
               </option>
@@ -157,7 +170,9 @@ export default function HistoryPage() {
         {/* Display Structured History */}
         {!loading && history && (
           <div className="mx-auto max-w-2xl px-4 mt-6 space-y-6">
-            <h2 className="text-lg font-semibold text-center">Patient History</h2>
+            <h2 className="text-lg font-semibold text-center">
+              Patient History
+            </h2>
             {Object.entries(history).map(([key, value]) => (
               <div key={key} className="rounded-lg border p-8">
                 <h2 className="mb-2 text-lg font-semibold">
@@ -180,27 +195,26 @@ export default function HistoryPage() {
           <Chat
             className="mx-auto max-w-2xl px-4 mt-4"
             history={JSON.stringify(history)}
+            // Pass the callback so that the Chat component updates conversation logs.
+            setConversationLogs={setConversationLogs}
           />
         )}
 
-        {/* History Answer Form */}
-        {!loading &&
-          history &&
-          sessionStart &&
-          selectedCategory &&
-          selectedCondition && (
-            <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
-              <h2 className="text-xl font-semibold text-center mb-4">
-                Answer the Questions
-              </h2>
-              <HistoryAnswerForm
-                history={JSON.stringify(history)}
-                sessionStart={sessionStart}
-                category={selectedCategory}
-                icdCode={selectedCondition}
-              />
-            </div>
-          )}
+        {/* History Marking Form */}
+        {!loading && history && sessionStart && selectedCategory && mimicConditionNumber && (
+          <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
+            <h2 className="text-xl font-semibold text-center mb-4">
+              Answer the Questions
+            </h2>
+            <HistoryMarkingForm
+              expectedHistory={JSON.stringify(history)}
+              historyLoadedAt={sessionStart}
+              questionsCount={0} // update as needed
+              correctCondition={mimicConditionNumber} // Pass mimic condition number.
+              conversationLogs={conversationLogs}
+            />
+          </div>
+        )}
       </div>
     </Providers>
   );

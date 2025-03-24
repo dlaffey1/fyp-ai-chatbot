@@ -185,6 +185,17 @@ export function AppSidebar({ session }: { session?: any }) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href="/test"
+                      className={cn("flex items-center text-sm text-sidebar-foreground hover:underline")}
+                    >
+                      <MessageSquare className="mr-2" />
+                      <span>Test page</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
