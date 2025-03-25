@@ -128,6 +128,7 @@ export default function HistoryPage() {
                 sessionStart={sessionStart}
                 category={selectedCategory}
                 icdCode={selectedCondition}
+                conversationLogs=""
               />
             </div>
           )}

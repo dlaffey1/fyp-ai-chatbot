@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import {
   RadarChart,
   Radar,
@@ -19,7 +20,12 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp } from "lucide-react";
+
+// Dynamically import the TrendingUp icon from lucide-react.
+const TrendingUp = dynamic(
+  () => import("lucide-react").then((mod) => mod.TrendingUp),
+  { ssr: false }
+);
 
 // Define the shape of your history session row.
 interface HistorySession {

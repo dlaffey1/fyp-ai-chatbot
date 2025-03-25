@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft } from "lucide-react"
+// import { PanelLeft } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -18,6 +18,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+
+const usePanelLeftIcon = () => {
+  const [Icon, setIcon] = React.useState<React.ElementType | null>(null)
+
+  React.useEffect(() => {
+    let isMounted = true
+    import("lucide-react").then((mod) => {
+      if (isMounted) {
+        setIcon(() => mod.PanelLeft)
+      }
+    })
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  return Icon
+}
+usePanelLeftIcon.displayName = "usePanelLeftIcon"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -258,12 +277,12 @@ const Sidebar = React.forwardRef<
   }
 )
 Sidebar.displayName = "Sidebar"
-
 const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
   const { toggleSidebar } = useSidebar()
+  const Icon = usePanelLeftIcon() // <-- Load dynamically
 
   return (
     <Button
@@ -278,12 +297,13 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      <PanelLeft />
+      {Icon && <Icon className="w-4 h-4" />} {/* Dynamic Icon here */}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
 })
 SidebarTrigger.displayName = "SidebarTrigger"
+
 
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,

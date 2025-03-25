@@ -10,7 +10,9 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
-import { X } from "lucide-react";
+
+const XIcon = React.lazy(() => import("lucide-react").then(mod => ({ default: mod.X })));
+
 import { cn } from "@/lib/utils";
 
 interface VoiceActivityDialogProps {

@@ -2,14 +2,20 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { nanoid } from "nanoid";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat-list";
 import { ChatPanel } from "@/components/chat-panel";
 import { ChatScrollAnchor } from "@/components/chat-scroll-anchor";
 import { EmptyScreen } from "@/components/empty-screen";
-import { useApiUrl } from "@/config/contexts/api_url_context"; // Use API URL from context
+import { useApiUrl } from "@/config/contexts/api_url_context";
+
+// Define your own Message type
+export interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+}
 
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
@@ -22,12 +28,22 @@ export function Chat_askquestion({
   initialMessages = [],
   history = null,
   className,
-  setConversationLogs, // optional callback to update conversation logs in parent
+  setConversationLogs,
 }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { apiUrl } = useApiUrl(); // Get API base URL from context
+
+  // Dynamically import nanoid to avoid static import issues.
+  const [nanoidFunc, setNanoidFunc] = useState<(() => string) | null>(null);
+
+
+  useEffect(() => {
+    import("nanoid").then((mod) => {
+      setNanoidFunc(() => mod.nanoid);
+    });
+  }, []);
 
   // Update conversation logs every time messages change.
   useEffect(() => {
@@ -41,12 +57,16 @@ export function Chat_askquestion({
 
   async function handleSubmit(userInput: string) {
     if (!userInput.trim()) return;
+    if (!nanoidFunc) {
+      console.error("nanoid not loaded yet");
+      return;
+    }
 
     // Add user message with a random "id"
     setMessages((prev) => [
       ...prev,
       {
-        id: nanoid(),
+        id: nanoidFunc(),
         role: "user",
         content: userInput,
       },
@@ -79,7 +99,7 @@ export function Chat_askquestion({
       setMessages((prev) => [
         ...prev,
         {
-          id: nanoid(),
+          id: nanoidFunc(),
           role: "assistant",
           content: data.answer || "No response received.",
         },
@@ -90,7 +110,7 @@ export function Chat_askquestion({
       setMessages((prev) => [
         ...prev,
         {
-          id: nanoid(),
+          id: nanoidFunc(),
           role: "assistant",
           content: `Failed to get a response: ${error.message}`,
         },
@@ -98,6 +118,11 @@ export function Chat_askquestion({
     } finally {
       setIsLoading(false);
     }
+  }
+
+  // Render fallback until nanoid is loaded.
+  if (!nanoidFunc) {
+    return <p>Loading...</p>;
   }
 
   return (

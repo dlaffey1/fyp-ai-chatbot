@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import {
   RadarChart,
   Radar,
@@ -19,13 +20,18 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp } from "lucide-react";
 
-// Define the shape of a marking result row we fetch from Supabase.
+// Dynamically import the TrendingUp icon
+const TrendingUp = dynamic(
+  () => import("lucide-react").then((mod) => mod.TrendingUp),
+  { ssr: false }
+);
+
+// Define the shape of a marking result row from Supabase.
 interface MarkingResult {
   right_disease: string;
   overall_score: string;       // e.g. "50%"
-  history_taking_score: string;  // e.g. "75%"
+  history_taking_score: string; // e.g. "75%"
 }
 
 // Define the shape for our chart data.
@@ -34,45 +40,64 @@ interface CategoryAverage {
   average: number;
 }
 
-const icdToCategory: { [key: string]: string } = {
-  "410.9": "Cardiovascular",
-  "592.1": "Urology",
-  // Add more mappings here as needed.
-};
+// Define the expected shape of each ICD mapping record.
+interface IcdMapping {
+  icd: string;
+  category: string;
+}
 
 export function MarkingPerformanceCharts() {
   const [overallData, setOverallData] = useState<CategoryAverage[]>([]);
   const [historyTakingData, setHistoryTakingData] = useState<CategoryAverage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [icdMapping, setIcdMapping] = useState<Record<string, string>>({});
+
+  // Fetch ICD-to-category mapping from the endpoint.
+  const fetchIcdMapping = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("icd_to_category")
+        .select("icd, category") as { data: IcdMapping[] | null; error: any };
+      if (error) throw error;
+      if (!data) return;
+      // Transform the array into a lookup object.
+      const mapping: Record<string, string> = {};
+      data.forEach((row) => {
+        mapping[row.icd] = row.category;
+      });
+      setIcdMapping(mapping);
+    } catch (error) {
+      console.error("Error fetching ICD mapping:", error);
+    }
+  };
 
   const fetchMarkingResults = async () => {
     setLoading(true);
     try {
       const userId = localStorage.getItem("user_uuid") || "";
+      // Cast the response to bypass the deep type instantiation issue.
       const { data: results, error } = await supabase
-        .from<MarkingResult>("history_marking_results")
+        .from("history_marking_results")
         .select("right_disease, overall_score, history_taking_score")
-        .eq("user_id", userId);
+        .eq("user_id", userId) as { data: MarkingResult[] | null; error: any };
 
       if (error) throw error;
       if (!results) return;
 
-      // Group by category using our mapping. We'll assume each marking result has an ICD code in right_disease.
+      // Group results by category using the fetched ICD mapping.
       const overallGroups: { [key: string]: number[] } = {};
       const htGroups: { [key: string]: number[] } = {};
 
       results.forEach((result) => {
-        const category = icdToCategory[result.right_disease] || "Other";
-        // Parse overall_score (strip "%" if exists).
+        const category = icdMapping[result.right_disease] || "Other";
+        // Parse scores (remove "%" if it exists).
         const overall = parseFloat(result.overall_score.replace("%", ""));
-        // Parse history_taking_score.
         const htScore = parseFloat(result.history_taking_score.replace("%", ""));
-
+        
         if (!isNaN(overall)) {
           if (!overallGroups[category]) overallGroups[category] = [];
           overallGroups[category].push(overall);
         }
-
         if (!isNaN(htScore)) {
           if (!htGroups[category]) htGroups[category] = [];
           htGroups[category].push(htScore);
@@ -95,9 +120,17 @@ export function MarkingPerformanceCharts() {
     }
   };
 
+  // Fetch the ICD mapping when the component mounts.
   useEffect(() => {
-    fetchMarkingResults();
+    fetchIcdMapping();
   }, []);
+
+  // Once the ICD mapping is available, fetch the marking results.
+  useEffect(() => {
+    if (Object.keys(icdMapping).length > 0) {
+      fetchMarkingResults();
+    }
+  }, [icdMapping]);
 
   return (
     <div className="space-y-12 p-4">

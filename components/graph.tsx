@@ -1,7 +1,9 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import React, { useState, useEffect } from "react";
+// Removed static import of TrendingUp:
+// import { TrendingUp } from "lucide-react"
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
   Card,
@@ -10,13 +12,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
+
 const chartData = [
   { month: "January", desktop: 186 },
   { month: "February", desktop: 305 },
@@ -24,16 +27,28 @@ const chartData = [
   { month: "April", desktop: 73 },
   { month: "May", desktop: 209 },
   { month: "June", desktop: 214 },
-]
+];
 
 const chartConfig = {
   desktop: {
     label: "Desktop",
     color: "hsl(var(--chart-1))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
-export function Component() {
+// Dynamically import TrendingUp icon from lucide-react.
+const GraphComponent = () => {
+  const [TrendingUp, setTrendingUp] =
+    useState<React.FC<{ className?: string }> | null>(null);
+
+  useEffect(() => {
+    import("lucide-react").then((module) => {
+      setTrendingUp(() => module.TrendingUp);
+    });
+  }, []);
+
+  if (!TrendingUp) return <p>Loading icon...</p>;
+
   return (
     <Card>
       <CardHeader>
@@ -87,5 +102,9 @@ export function Component() {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
+};
+
+export function Component() {
+  return <GraphComponent />;
 }

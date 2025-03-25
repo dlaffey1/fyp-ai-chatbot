@@ -15,9 +15,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useApiUrl } from "@/config/contexts/api_url_context";
+
+// Removed static import of icons:
+// import { Check, ChevronsUpDown } from "lucide-react";
 
 interface ConditionSelectorProps {
   onConditionSelect: (selection: { category: string; condition: string }) => void;
@@ -31,6 +33,24 @@ export default function ConditionSelector({ onConditionSelect }: ConditionSelect
   const [open, setOpen] = useState(false);
   const { apiUrl } = useApiUrl();
 
+  // Dynamically import lucide-react icons.
+  const [icons, setIcons] = useState<{
+    Check: React.FC<{ className?: string }>;
+    ChevronsUpDown: React.FC<{ className?: string }>;
+  } | null>(null);
+
+  useEffect(() => {
+    import("lucide-react").then((module) => {
+      setIcons({
+        Check: module.Check,
+        ChevronsUpDown: module.ChevronsUpDown,
+      });
+    });
+  }, []);
+
+  // Always call hooks before rendering.
+  // Instead of returning early, include a fallback in the JSX.
+  
   // Fetch general categories from your backend endpoint.
   useEffect(() => {
     const fetchCategories = async () => {
@@ -72,7 +92,6 @@ export default function ConditionSelector({ onConditionSelect }: ConditionSelect
     console.log("Specific condition selected:", condition);
     setSelectedCondition(condition);
     setOpen(false);
-    // Call onConditionSelect with both values.
     if (selectedCategory) {
       onConditionSelect({ category: selectedCategory, condition });
     }
@@ -80,10 +99,15 @@ export default function ConditionSelector({ onConditionSelect }: ConditionSelect
 
   return (
     <div className="flex flex-col items-center">
-      <Popover open={open} onOpenChange={(value) => { 
+      {/* If icons haven't loaded, show fallback within the component */}
+      {icons ? null : <p>Loading icons...</p>}
+      <Popover
+        open={open}
+        onOpenChange={(value) => {
           console.log("Popover open state changed:", value);
           setOpen(value);
-      }}>
+        }}
+      >
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-[250px] justify-between">
             {selectedCondition
@@ -91,7 +115,7 @@ export default function ConditionSelector({ onConditionSelect }: ConditionSelect
               : selectedCategory
               ? `Category: ${selectedCategory}`
               : "Select a Condition..."}
-            <ChevronsUpDown className="opacity-50" />
+            {icons && <icons.ChevronsUpDown className="opacity-50" />}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[250px] p-0">
@@ -104,7 +128,15 @@ export default function ConditionSelector({ onConditionSelect }: ConditionSelect
                   {generalCategories.map((category) => (
                     <CommandItem key={category} onSelect={() => handleSelectGeneralCategory(category)}>
                       {category}
-                      <Check className={selectedCategory === category ? "opacity-100 ml-auto" : "opacity-0 ml-auto"} />
+                      {icons && (
+                        <icons.Check
+                          className={
+                            selectedCategory === category
+                              ? "opacity-100 ml-auto"
+                              : "opacity-0 ml-auto"
+                          }
+                        />
+                      )}
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -114,13 +146,21 @@ export default function ConditionSelector({ onConditionSelect }: ConditionSelect
                   {conditions.map((condition) => (
                     <CommandItem key={condition} onSelect={() => handleSelectCondition(condition)}>
                       {condition}
-                      <Check className={selectedCondition === condition ? "opacity-100 ml-auto" : "opacity-0 ml-auto"} />
+                      {icons && (
+                        <icons.Check
+                          className={
+                            selectedCondition === condition
+                              ? "opacity-100 ml-auto"
+                              : "opacity-0 ml-auto"
+                          }
+                        />
+                      )}
                     </CommandItem>
                   ))}
-                  <CommandItem onSelect={() => { 
+                  <CommandItem onSelect={() => {
                     console.log("Going back to general categories");
                     setSelectedCategory(null);
-                    setConditions([]); 
+                    setConditions([]);
                   }}>
                     ← Back to Categories
                   </CommandItem>

@@ -1,8 +1,10 @@
-// components/pricing.tsx
+"use client";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { DollarSign } from "lucide-react"; // Using a money icon as an example
+// Removed static import of DollarSign
+// import { DollarSign } from "lucide-react"; // Using a money icon as an example
 import Link from "next/link";
 
 type Plan = {
@@ -21,51 +23,62 @@ type Plan = {
   classes?: string;
 };
 
-const plans: Plan[] = [
-  {
-    name: "Basic Medical Tool",
-    icon: <DollarSign className="h-4 w-4" />,
-    description:
-      "For users with lighter usage. This plan uses GPT-3 tokens and includes a limited number of requests per month.",
-    price: 29,
-    priceNote: "Limited to 1,000 requests/month.",
-    cta: {
-      variant: "default",
-      label: "Choose Basic",
-      href: "/signup?plan=basic", // Adjust route as needed
-    },
-    features: [
-      "Up to 1,000 requests per month",
-      "Powered by GPT-3 tokens",
-      "Basic support and updates",
-    ],
-    featured: false,
-    classes: "",
-  },
-  {
-    name: "Advanced Medical Tool",
-    icon: <DollarSign className="h-4 w-4" />,
-    description:
-      "For heavy users and professionals. This plan uses GPT-3.5 tokens and allows a higher number of requests with enhanced performance.",
-    price: 99,
-    priceNote: "Unlimited requests with priority support.",
-    cta: {
-      variant: "secondary", // Changed from "glow" to "secondary"
-      label: "Choose Advanced",
-      href: "/signup?plan=advanced", // Adjust route as needed
-    },
-    features: [
-      "Unlimited requests",
-      "Powered by GPT-3.5 tokens",
-      "Priority support and regular updates",
-    ],
-    featured: true,
-    classes:
-      "after:content-[''] after:absolute after:-top-[128px] after:left-1/2 after:h-[128px] after:w-full after:max-w-[960px] after:-translate-x-1/2 after:rounded-full after:bg-brand-foreground/70 after:blur-[72px]",
-  },
-];
-
 export default function Pricing() {
+  // Added dynamic import for DollarSign
+  const [DollarSign, setDollarSign] = useState<React.FC<{ className?: string }> | null>(null);
+
+  useEffect(() => {
+    import("lucide-react").then((module) => {
+      setDollarSign(() => module.DollarSign);
+    });
+  }, []);
+
+  if (!DollarSign) return <p>Loading icon...</p>;
+
+  const plans: Plan[] = [
+    {
+      name: "Basic Medical Tool",
+      icon: <DollarSign className="h-4 w-4" />,
+      description:
+        "For users with lighter usage. This plan uses GPT-3 tokens and includes a limited number of requests per month.",
+      price: 29,
+      priceNote: "Limited to 1,000 requests/month.",
+      cta: {
+        variant: "default",
+        label: "Choose Basic",
+        href: "/signup?plan=basic",
+      },
+      features: [
+        "Up to 1,000 requests per month",
+        "Powered by GPT-3 tokens",
+        "Basic support and updates",
+      ],
+      featured: false,
+      classes: "",
+    },
+    {
+      name: "Advanced Medical Tool",
+      icon: <DollarSign className="h-4 w-4" />,
+      description:
+        "For heavy users and professionals. This plan uses GPT-3.5 tokens and allows a higher number of requests with enhanced performance.",
+      price: 99,
+      priceNote: "Unlimited requests with priority support.",
+      cta: {
+        variant: "secondary",
+        label: "Choose Advanced",
+        href: "/signup?plan=advanced",
+      },
+      features: [
+        "Unlimited requests",
+        "Powered by GPT-3.5 tokens",
+        "Priority support and regular updates",
+      ],
+      featured: true,
+      classes:
+        "after:content-[''] after:absolute after:-top-[128px] after:left-1/2 after:h-[128px] after:w-full after:max-w-[960px] after:-translate-x-1/2 after:rounded-full after:bg-brand-foreground/70 after:blur-[72px]",
+    },
+  ];
+
   return (
     <Section>
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-12">
@@ -115,9 +128,7 @@ export default function Pricing() {
                   </div>
                   <div className="flex min-h-[40px] flex-col">
                     {plan.price > 0 && (
-                      <span className="text-sm">
-                        {plan.priceNote}
-                      </span>
+                      <span className="text-sm">{plan.priceNote}</span>
                     )}
                   </div>
                 </div>

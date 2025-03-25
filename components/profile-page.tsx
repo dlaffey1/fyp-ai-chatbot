@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { nanoid } from "@/lib/utils"; // Ensure nanoid is exported from your utils
+import { getNanoid } from "@/lib/utils"; // Ensure nanoid is exported from your utils
 
 interface ProfilePageProps {
   session: any;
@@ -32,8 +32,8 @@ export default function ProfilePage({ session }: ProfilePageProps) {
 
     const data = await response.json();
     if (data.avatar_url) {
-      // Use nanoid() for cache busting
-      const newAvatarUrl = `${data.avatar_url}?v=${nanoid()}`;
+      // Use getNanoid() for cache busting
+      const newAvatarUrl = `${data.avatar_url}?v=${getNanoid()}`;
       setProfilePic(newAvatarUrl);
 
       // Notify other parts of the app (e.g., Navbar) about the update

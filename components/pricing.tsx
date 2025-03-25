@@ -1,9 +1,23 @@
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { CircleCheckBig, User, Users } from "lucide-react";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+
+// Dynamically import lucide-react icons
+const CircleCheckBig = dynamic(
+  () => import("lucide-react").then((mod) => mod.CircleCheckBig),
+  { ssr: false }
+);
+const User = dynamic(
+  () => import("lucide-react").then((mod) => mod.User),
+  { ssr: false }
+);
+const Users = dynamic(
+  () => import("lucide-react").then((mod) => mod.Users),
+  { ssr: false }
+);
 
 type Plan = {
   name: string;
@@ -12,7 +26,7 @@ type Plan = {
   price: number;
   priceNote: string;
   cta: {
-    variant: "default" | "outline"; // Fix for TypeScript error
+    variant: "default" | "outline";
     label: string;
     href: string;
   };
@@ -42,7 +56,7 @@ const plans: Plan[] = [
   },
   {
     name: "Pro",
-    icon: <User className="size-4" />, // Replaced h-4 w-4 with size-4
+    icon: <User className="size-4" />, // Use dynamic User icon
     description: "For early-stage founders, solopreneurs and indie devs",
     price: 99,
     priceNote: "Lifetime access. Free updates. No recurring fees.",
@@ -63,7 +77,7 @@ const plans: Plan[] = [
   },
   {
     name: "Pro Team",
-    icon: <Users className="size-4" />, // Replaced h-4 w-4 with size-4
+    icon: <Users className="size-4" />, // Use dynamic Users icon
     description: "For teams and agencies working on cool products together",
     price: 499,
     priceNote: "Lifetime access. Free updates. No recurring fees.",
@@ -105,7 +119,7 @@ export default function Pricing() {
             >
               <hr
                 className={cn(
-                  "absolute left-[10%] top-0 h-px w-[80%] border-0 bg-gradient-to-r from-transparent via-foreground/60 to-transparent", // Replaced h-[1px] with h-px
+                  "absolute left-[10%] top-0 h-px w-[80%] border-0 bg-gradient-to-r from-transparent via-foreground/60 to-transparent",
                   plan.featured && "via-brand"
                 )}
               />
@@ -141,7 +155,11 @@ export default function Pricing() {
                     )}
                   </div>
                 </div>
-                <Button variant={plan.cta.variant as "default" | "outline"} size="lg" asChild>
+                <Button
+                  variant={plan.cta.variant as "default" | "outline"}
+                  size="lg"
+                  asChild
+                >
                   <Link href={plan.cta.href}>{plan.cta.label}</Link>
                 </Button>
                 <p className="min-h-[40px] max-w-[220px] text-sm text-muted-foreground">

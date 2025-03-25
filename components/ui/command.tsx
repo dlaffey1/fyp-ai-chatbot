@@ -3,10 +3,11 @@
 import * as React from "react"
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { Command as CommandPrimitive } from "cmdk"
-import { Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
+import dynamic from "next/dynamic";
+const Search = dynamic(() => import("lucide-react").then((mod) => mod.Search), { ssr: false });
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
