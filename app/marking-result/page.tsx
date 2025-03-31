@@ -1,6 +1,31 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import ReactFlow, { ReactFlowProvider, Node, Edge, Background } from "reactflow";
+import 'reactflow/dist/style.css';
+
+// Helper function to parse profile nodes and produce readable labels.
+function parseProfileNode(text: string): string {
+  const trimmed = text.trim();
+  if (trimmed.startsWith("D node:")) {
+    // Extract the JSON part after "D node:"
+    const jsonPart = trimmed.substring("D node:".length).trim();
+    try {
+      const obj = JSON.parse(jsonPart);
+      let options = [];
+      if (Array.isArray(obj.triples)) {
+        // Use the third element from each triple (i.e. the treatment option)
+        options = obj.triples.map((triple: any) => triple[2]);
+      }
+      return `Decision Node: Options - ${options.join(", ")} (Logical: ${obj.logical_rel})`;
+    } catch (e) {
+      // If parsing fails, return the original text.
+      return trimmed;
+    }
+  }
+  // For question nodes, remove any wrapping quotes.
+  return trimmed.replace(/^"+|"+$/g, '');
+}
 
 export default function MarkingResultPage() {
   const searchParams = useSearchParams();
@@ -37,10 +62,10 @@ export default function MarkingResultPage() {
     SR: "Systems Review"
   };
 
-  // Extract history-taking feedback and profile questions from top-level keys.
+  // Extract history-taking feedback and profile questions.
   const historyTakingText = result.history_taking_feedback || "No history-taking feedback provided.";
   const historyTakingScore = result.history_taking_score || "0";
-  const profileQuestions = result.profile_questions || [];
+  const profileQuestions: string[] = result.profile_questions || [];
 
   return (
     <div className="min-h-screen bg-background dark:bg-background-dark p-8">
@@ -96,14 +121,14 @@ export default function MarkingResultPage() {
           </p>
         </div>
 
-        {/* Profile Questions */}
+        {/* Profile Questions (Text List) */}
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
           <h2 className="text-2xl font-semibold mb-4 text-foreground dark:text-foreground-dark">Profile Questions</h2>
           {profileQuestions.length > 0 ? (
             <ul className="space-y-3">
               {profileQuestions.map((question: string, index: number) => (
                 <li key={index} className="border p-3 rounded-md text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-700">
-                  {question}
+                  {parseProfileNode(question)}
                 </li>
               ))}
             </ul>
@@ -111,7 +136,66 @@ export default function MarkingResultPage() {
             <p className="text-lg text-gray-600 dark:text-gray-300">No profile questions generated.</p>
           )}
         </div>
+
+        {/* Graphical Decision Making Tree */}
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+          <h2 className="text-2xl font-semibold mb-4 text-foreground dark:text-foreground-dark">Question Logic Tree Diagram</h2>
+          <LogicTreeGraph profileQuestions={profileQuestions} />
+        </div>
       </div>
     </div>
+  );
+}
+
+// New component: LogicTreeGraph using React Flow
+function LogicTreeGraph({ profileQuestions }: { profileQuestions: string[] }) {
+  // Build nodes and edges from the profile questions.
+  // We assume that a question (not starting with "D node:") is a parent,
+  // and any following D node entries are children, until a new question is encountered.
+  const nodes: Node[] = [];
+  const edges: Edge[] = [];
+  let currentParentId: string | null = null;
+  let y = 0;
+  let idCounter = 1;
+
+  profileQuestions.forEach((item) => {
+    const label = parseProfileNode(item);
+    const id = `node_${idCounter++}`;
+    const isDecision = item.trim().startsWith("D node:");
+    if (!isDecision) {
+      // It's a question node.
+      currentParentId = id;
+      nodes.push({
+        id,
+        data: { label: `Q: ${label}` },
+        position: { x: 50, y },
+      });
+    } else {
+      // It's a decision node.
+      nodes.push({
+        id,
+        data: { label: `D: ${label}` },
+        position: { x: 300, y },
+      });
+      if (currentParentId) {
+        edges.push({
+          id: `edge_${currentParentId}_${id}`,
+          source: currentParentId,
+          target: id,
+          animated: true,
+        });
+      }
+    }
+    y += 100;
+  });
+
+  return (
+    <ReactFlowProvider>
+      <div style={{ height: Math.max(y, 300) }}>
+        <ReactFlow nodes={nodes} edges={edges} fitView>
+          <Background color="#aaa" gap={16} />
+        </ReactFlow>
+      </div>
+    </ReactFlowProvider>
   );
 }
