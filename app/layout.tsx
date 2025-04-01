@@ -14,7 +14,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ApiUrlProvider } from "@/config/contexts/api_url_context";
 import AuthLayoutWrapper from "@/components/auth-layout-wrapper";
-
 export const metadata: Metadata = {
   title: {
     default: "Patient History Assistant",

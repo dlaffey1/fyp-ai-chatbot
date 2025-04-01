@@ -3,8 +3,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Toaster } from "react-hot-toast";
 import { ThemeToggle } from "@/components/theme-toggle";
-import VoiceActivityDialog from "@/components/voice_activity_dialog"; // adjust the import path as needed
-import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
+import VoiceActivityDialog from "@/components/voice_activity_dialog"; // adjust path as needed
+import { useApiUrl } from "@/config/contexts/api_url_context";
+import { Chat } from "@/components/chat_askquestion";
+import { HistoryMarkingForm } from "@/components/history_marking_form";
+import ConditionSelector from "@/components/condition-selector";
+import { Providers } from "@/components/providers";
 
 interface HistoryData {
   PC: string;
@@ -26,29 +30,30 @@ export default function RealtimeChatPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-
   const { apiUrl } = useApiUrl();
-  // On mount, fetch the structured patient history.
+
+  // On mount, fetch the structured patient history using the random flag.
   useEffect(() => {
     async function fetchPatientHistory() {
       try {
-        const res = await fetch(
-          `${apiUrl}/generate-history/`,
-          { method: "POST" }
-        );
+        const res = await fetch(`${apiUrl}/generate-history/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          // Passing random: true so that the backend picks a random condition and subject_id.
+          body: JSON.stringify({ random: true }),
+        });
         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
         const data = await res.json();
-        const history = data.history;
-        setPatientHistory(history);
+        setPatientHistory(data.history);
         // Build an initial system message from the history.
         const systemContent = `Patient History:
-PC: ${history.PC}
-HPC: ${history.HPC}
-PMHx: ${history.PMHx}
-DHx: ${history.DHx}
-FHx: ${history.FHx}
-SHx: ${history.SHx}
-SR: ${history.SR}`;
+PC: ${data.history.PC}
+HPC: ${data.history.HPC}
+PMHx: ${data.history.PMHx}
+DHx: ${data.history.DHx}
+FHx: ${data.history.FHx}
+SHx: ${data.history.SHx}
+SR: ${data.history.SR}`;
         const systemMessage = { role: "system" as const, content: systemContent };
         const initialAssistant = {
           role: "assistant" as const,
@@ -60,7 +65,7 @@ SR: ${history.SR}`;
       }
     }
     fetchPatientHistory();
-  }, []);
+  }, [apiUrl]);
 
   // Setup MediaRecorder for recording audio.
   useEffect(() => {
@@ -100,7 +105,7 @@ SR: ${history.SR}`;
       }
     }
     initMedia();
-  }, []);
+  }, [apiUrl]);
 
   // When the mic button is clicked, start recording and open the dialog.
   const handleStartRecording = () => {
@@ -112,7 +117,7 @@ SR: ${history.SR}`;
     }
   };
 
-  // When the dialog is closed (via the stop button or clicking outside), stop recording.
+  // When the dialog is closed, stop recording.
   const handleStopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
@@ -121,9 +126,12 @@ SR: ${history.SR}`;
     }
   };
 
-  // Function to send a text message to the realtime chat API.
+  // Function to send a message to the chat API.
   async function sendMessage(newMessage: string) {
-    const updatedMessages = [...messages, { role: "user" as const, content: newMessage }];
+    const updatedMessages = [
+      ...messages,
+      { role: "user" as const, content: newMessage },
+    ];
     setMessages(updatedMessages);
     try {
       const res = await fetch(`${apiUrl}/realtime-endpoints/chat/`, {
@@ -131,9 +139,7 @@ SR: ${history.SR}`;
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedMessages, history: patientHistory }),
       });
-      if (!res.ok) {
-        throw new Error(`API responded with status ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`API responded with status ${res.status}`);
       const data = await res.json();
       const aiResponse = data.response;
       setMessages([...updatedMessages, { role: "assistant" as const, content: aiResponse }]);
@@ -152,58 +158,58 @@ SR: ${history.SR}`;
   }
 
   return (
-    <div className="min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
-      <Toaster />
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          Realtime Patient Conversation
-        </h1>
-        <ThemeToggle />
-      </div>
-      <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-md p-4">
-        <div className="border border-gray-200 dark:border-gray-700 p-4 rounded-md mb-4 h-96 overflow-y-auto">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-2 ${
-                msg.role === "assistant"
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-gray-800 dark:text-gray-100"
-              }`}
+    <Providers attribute="class" defaultTheme="system" enableSystem>
+      <div className="min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
+        <Toaster />
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Realtime Patient Conversation
+          </h1>
+          <ThemeToggle />
+        </div>
+        <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-md p-4">
+          <div className="border border-gray-200 dark:border-gray-700 p-4 rounded-md mb-4 h-96 overflow-y-auto">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`mb-2 ${
+                  msg.role === "assistant"
+                    ? "text-blue-600 dark:text-blue-400"
+                    : "text-gray-800 dark:text-gray-100"
+                }`}
+              >
+                <strong>{msg.role === "assistant" ? "Patient" : "You"}:</strong>{" "}
+                {msg.content}
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleStartRecording}
+              className="p-2 rounded-md bg-blue-500 dark:bg-blue-600"
             >
-              <strong>{msg.role === "assistant" ? "Patient" : "You"}:</strong>{" "}
-              {msg.content}
-            </div>
-          ))}
+              <img src="/mic.png" alt="Record" className="h-6 w-6" />
+            </button>
+            <input
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="Type your message..."
+              className="flex-1 border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+            />
+            <button
+              onClick={() => {
+                sendMessage(inputText);
+                setInputText("");
+              }}
+              className="px-4 py-2 bg-green-500 dark:bg-green-600 text-white rounded-md"
+            >
+              Send
+            </button>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          {/* Mic button that starts recording and opens the voice activity dialog */}
-          <button
-            onClick={handleStartRecording}
-            className="p-2 rounded-md bg-blue-500 dark:bg-blue-600"
-          >
-            <img src="/mic.png" alt="Record" className="h-6 w-6" />
-          </button>
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 border border-gray-300 dark:border-gray-600 p-2 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
-          />
-          <button
-            onClick={() => {
-              sendMessage(inputText);
-              setInputText("");
-            }}
-            className="px-4 py-2 bg-green-500 dark:bg-green-600 text-white rounded-md"
-          >
-            Send
-          </button>
-        </div>
+        <VoiceActivityDialog open={dialogOpen} onClose={handleStopRecording} />
       </div>
-      {/* Render the VoiceActivityDialog */}
-      <VoiceActivityDialog open={dialogOpen} onClose={handleStopRecording} />
-    </div>
+    </Providers>
   );
 }

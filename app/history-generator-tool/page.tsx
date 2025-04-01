@@ -44,15 +44,17 @@ export default function HistoryPage() {
     category: string;
     condition: string;
   }) => {
-    console.log("Condition selected:", { category, condition });
+    // Trim the condition before sending to the API.
+    const trimmedCondition = condition.trim();
+    console.log("Condition selected:", { category, condition: trimmedCondition });
     setSelectedCategory(category);
-    setSelectedCondition(condition);
+    setSelectedCondition(trimmedCondition);
     setLoading(true);
     try {
       const res = await fetch(`${apiUrl}/generate-history/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ condition }),
+        body: JSON.stringify({ condition: trimmedCondition }),
       });
       if (!res.ok) throw new Error("Failed to fetch history");
       const data = await res.json();

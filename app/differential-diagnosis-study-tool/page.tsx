@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { Chat } from "@/components/chat_askquestion";
 import { Providers } from "@/components/providers";
 import { HistoryMarkingForm } from "@/components/history_marking_form";
-import { useApiUrl } from "@/config/contexts/api_url_context"; // Global API URL context
+import { useApiUrl } from "@/config/contexts/api_url_context";
 
 interface HistoryData {
   PC: string;
@@ -19,13 +19,18 @@ interface HistoryData {
 
 export default function ChatPage() {
   const [history, setHistory] = useState<HistoryData | null>(null);
-  const [rightCondition, setRightCondition] = useState<string>(""); // New state for correct condition.
+  // Store the mimic condition number (ICD code) returned by the API.
+  const [rightCondition, setRightCondition] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [historyLoadedAt, setHistoryLoadedAt] = useState<number | null>(null);
-  const [questionsCount, setQuestionsCount] = useState<number>(0); // Update this as ask-question is hit.
-  const [conversationLogs, setConversationLogs] = useState<string>(""); // Conversation log state.
+  const [questionsCount, setQuestionsCount] = useState<number>(0);
+  const [conversationLogs, setConversationLogs] = useState<string>("");
   const hasFetchedRef = useRef(false);
   const { apiUrl } = useApiUrl();
+
+  useEffect(() => {
+    console.log("Conversation logs updated:", conversationLogs);
+  }, [conversationLogs]);
 
   useEffect(() => {
     if (hasFetchedRef.current) return;
@@ -34,10 +39,12 @@ export default function ChatPage() {
     const fetchHistory = async () => {
       setLoading(true);
       try {
+        // Call the endpoint with the random flag to force random selection.
         const res = await fetch(`${apiUrl}/generate-history/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
+          body: JSON.stringify({ random: true }), // random flag added here
         });
 
         if (!res.ok) {
@@ -77,7 +84,7 @@ export default function ChatPage() {
             <Chat
               className="mx-auto max-w-2xl px-4 mt-4"
               history={history ? JSON.stringify(history) : ""}
-              // Optionally, you could pass a callback to update conversationLogs based on chat events.
+              // Pass the callback so that the Chat component updates conversation logs.
               setConversationLogs={setConversationLogs}
             />
             {/* Add the History Marking Form below the Chat section with increased bottom margin */}
@@ -87,7 +94,7 @@ export default function ChatPage() {
                   expectedHistory={JSON.stringify(history)}
                   historyLoadedAt={historyLoadedAt}
                   questionsCount={questionsCount}
-                  correctCondition={rightCondition}  // Pass the extracted correct condition.
+                  correctCondition={rightCondition} // Pass the extracted correct condition.
                   conversationLogs={conversationLogs}
                 />
               )}
