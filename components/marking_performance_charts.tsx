@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useApiUrl } from "@/config/contexts/api_url_context";
+import { useUser } from "@supabase/auth-helpers-react";
+import { v5 as uuidv5 } from "uuid";
 
 // Dynamically import the TrendingUp icon.
 const TrendingUp = dynamic(
@@ -54,6 +56,17 @@ export function MarkingPerformanceCharts() {
   const [icdMapping, setIcdMapping] = useState<Record<string, string>>({});
   const { apiUrl } = useApiUrl();
 
+  // Get the current user and compute their deterministic user_id.
+  const user = useUser();
+  const user_email = user?.email || "";
+  const NAMESPACE = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+  const computedUserId = user_email ? uuidv5(user_email, NAMESPACE) : "";
+
+  // Log the generated UUID whenever it changes.
+  useEffect(() => {
+    console.log("Generated user ID (uuid):", computedUserId);
+  }, [computedUserId]);
+
   // Function to fetch category for a single condition using your endpoint.
   const fetchCategoryForCondition = async (condition: string): Promise<string> => {
     try {
@@ -78,10 +91,11 @@ export function MarkingPerformanceCharts() {
   const fetchMarkingResults = async () => {
     setLoading(true);
     try {
-      // Query overall_score and history_taking_score from the profile table.
+      // Query marking results only for the current user.
       const { data: results, error } = await supabase
         .from("history_entries_with_profiles")
-        .select("right_disease, overall_score, history_taking_score") as { data: MarkingResult[] | null; error: any };
+        .select("right_disease, overall_score, history_taking_score")
+        .eq("user_id", computedUserId);
 
       if (error) throw error;
       if (!results) {
@@ -155,8 +169,10 @@ export function MarkingPerformanceCharts() {
 
   // Fetch marking results on mount.
   useEffect(() => {
-    fetchMarkingResults();
-  }, [apiUrl]);
+    if (computedUserId) {
+      fetchMarkingResults();
+    }
+  }, [apiUrl, computedUserId]);
 
   return (
     <div className="space-y-12 p-4">

@@ -20,6 +20,8 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@supabase/auth-helpers-react";
+import { v5 as uuidv5 } from "uuid";
 
 // Dynamically import the TrendingUp icon from lucide-react.
 const TrendingUp = dynamic(
@@ -46,14 +48,26 @@ export function OsceResultPerformanceChart() {
   const [data, setData] = useState<CategoryAverage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Fetch history session data from Supabase and group by category.
+  // Get the current user and compute their deterministic user_id.
+  const user = useUser();
+  const user_email = user?.email || "";
+  const NAMESPACE = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+  const computedUserId = user_email ? uuidv5(user_email, NAMESPACE) : "";
+
+  // Log the computed user id when it changes.
+  useEffect(() => {
+    console.log("Computed user ID:", computedUserId);
+  }, [computedUserId]);
+
+  // Fetch history session data from Supabase, filtering by the computed user_id.
   const fetchData = async () => {
     setLoading(true);
     try {
       // Query the history_sessions table with q1_result–q4_result scores and the category.
       const { data: results, error } = await supabase
         .from("history_sessions")
-        .select("category, q1_result, q2_result, q3_result, q4_result");
+        .select("category, q1_result, q2_result, q3_result, q4_result")
+        .eq("user_id", computedUserId);
 
       if (error) throw error;
 
@@ -61,7 +75,7 @@ export function OsceResultPerformanceChart() {
         // Group results by category and compute an average for each row (across q1_result–q4_result).
         const groups: { [key: string]: number[] } = {};
         results.forEach((result: HistorySession) => {
-          // Make sure all scores exist.
+          // Ensure all scores exist.
           if (
             result.category &&
             result.q1_result !== null &&
@@ -102,8 +116,10 @@ export function OsceResultPerformanceChart() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (computedUserId) {
+      fetchData();
+    }
+  }, [computedUserId]);
 
   return (
     <Card>

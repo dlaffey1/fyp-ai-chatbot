@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useApiUrl } from "@/config/contexts/api_url_context";
 import { supabase } from "@/lib/supabaseClient";
+import { useUser } from "@supabase/auth-helpers-react"; // Import Supabase auth hook
+import { v5 as uuidv5 } from "uuid";
 
 interface Question {
   question: string;
@@ -34,12 +36,20 @@ export function HistoryAnswerForm({
   sessionStart,
   category,
   icdCode,
+  conversationLogs,
 }: HistoryAnswerFormProps) {
   const router = useRouter();
   const { register, handleSubmit } = useForm<AnswersFormValues>();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { apiUrl } = useApiUrl();
+
+  // Get the current user and compute their deterministic user_id.
+  const user = useUser();
+  const user_email = user?.email || "";
+  const NAMESPACE = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+  const computedUserId = user_email ? uuidv5(user_email, NAMESPACE) : "";
+  console.log("Computed user ID:", computedUserId);
 
   // Helper: convert score string like "100%" to number 100.
   const parseScore = (score: any): number => {
@@ -82,7 +92,8 @@ export function HistoryAnswerForm({
     q4Result: number,
     overallGrade: number,
     category: string,
-    icdCode: string
+    icdCode: string,
+    user_id: string // New field for user id
   ) => {
     try {
       const { data, error } = await supabase.from("history_sessions").insert([
@@ -99,6 +110,7 @@ export function HistoryAnswerForm({
           overall_grade: overallGrade,
           category,
           icd_code: icdCode,
+          user_id, // Include the computed user_id
         },
       ]);
       if (error) {
@@ -171,7 +183,8 @@ export function HistoryAnswerForm({
         q4Result,
         overallGrade,
         category,
-        icdCode
+        icdCode,
+        computedUserId // Pass the computed user ID
       );
 
       router.push(
