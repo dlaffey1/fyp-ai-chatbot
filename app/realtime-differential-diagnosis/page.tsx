@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import VoiceActivityDialog from "@/components/voice_activity_dialog"; // adjust path as needed
 import { useApiUrl } from "@/config/contexts/api_url_context";
 import { Chat } from "@/components/chat_askquestion";
-import { HistoryMarkingForm } from "@/components/history_marking_form";
+import HistoryMarkingForm from "@/components/history_marking_form";
 import ConditionSelector from "@/components/condition-selector";
 import { Providers } from "@/components/providers";
 

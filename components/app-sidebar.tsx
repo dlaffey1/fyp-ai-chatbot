@@ -1,3 +1,4 @@
+// File: app/components/AppSidebar.tsx
 "use client";
 
 import * as React from "react";
@@ -19,6 +20,8 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useApiUrl } from "@/config/contexts/api_url_context"; // Adjust the path if needed
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useUser } from "@supabase/auth-helpers-react";
 
 export function AppSidebar({ session }: { session?: any }) {
   // Profile picture state – default to a fallback image.
@@ -26,6 +29,13 @@ export function AppSidebar({ session }: { session?: any }) {
   const [profileVersion, setProfileVersion] = React.useState(0);
 
   const { apiUrl, setApiUrl } = useApiUrl();
+
+  // Create a Supabase client.
+  const supabase = createClientComponentClient();
+
+  // Use Supabase hook to get the user if session is not passed in.
+  const userFromHook = useUser();
+  const currentUser = session?.user || userFromHook;
 
   // Dynamic import state for lucide-react icons.
   const [icons, setIcons] = React.useState<{
@@ -57,9 +67,9 @@ export function AppSidebar({ session }: { session?: any }) {
 
   // Function to fetch profile picture.
   const fetchProfilePicture = async () => {
-    if (session?.user) {
+    if (currentUser) {
       try {
-        const res = await fetch(`/api/get-profile-picture?id=${session.user.id}`);
+        const res = await fetch(`/api/get-profile-picture?id=${currentUser.id}`);
         if (!res.ok) throw new Error("Failed to fetch profile picture");
         const data = await res.json();
         // Use cache busting with the profileVersion.
@@ -73,10 +83,10 @@ export function AppSidebar({ session }: { session?: any }) {
     }
   };
 
-  // Fetch the profile picture on mount and when session changes.
+  // Fetch the profile picture on mount and when currentUser changes.
   React.useEffect(() => {
     fetchProfilePicture();
-  }, [session, profileVersion]);
+  }, [currentUser, profileVersion]);
 
   // Toggle API URL between production and local.
   const toggleApiUrl = () => {
@@ -250,7 +260,7 @@ export function AppSidebar({ session }: { session?: any }) {
                 {apiUrl.includes("localhost") ? "Local" : "Production"}
               </span>
             </div>
-            {session?.user ? (
+            {currentUser ? (
               <div className="flex items-center justify-between">
                 <Link href="/profile">
                   <img
@@ -263,10 +273,7 @@ export function AppSidebar({ session }: { session?: any }) {
                   className="text-sm text-sidebar-foreground hover:underline"
                   onClick={async () => {
                     try {
-                      const response = await fetch("/api/auth/sign-out", {
-                        method: "POST",
-                      });
-                      if (!response.ok) throw new Error("Failed to sign out");
+                      await supabase.auth.signOut();
                       window.location.href = "/sign-in";
                     } catch (error) {
                       console.error("Sign-out error:", error);

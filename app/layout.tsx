@@ -1,5 +1,5 @@
-// app/layout.tsx
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
+
 import { Metadata } from "next";
 import React from "react";
 import { Toaster } from "react-hot-toast";
@@ -9,11 +9,12 @@ import { cn } from "@/lib/utils";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/header-server";
-import { getAuthSession } from '@/auth.server';
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ApiUrlProvider } from "@/config/contexts/api_url_context";
 import AuthLayoutWrapper from "@/components/auth-layout-wrapper";
+import SupabaseProviderWrapper from "@/components/supabase-provider-wrapper";
+
 export const metadata: Metadata = {
   title: {
     default: "Patient History Assistant",
@@ -36,9 +37,7 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
-export default async function RootLayout({ children }: RootLayoutProps) {
-  const session = await getAuthSession();
-
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -46,11 +45,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <Toaster />
         <ApiUrlProvider>
           <Providers attribute="class" defaultTheme="system" enableSystem>
-            {/* Wrap the content in AuthLayoutWrapper so that routes like /sign-up render properly */}
-            <AuthLayoutWrapper session={session}>
-              {session?.user ? (
+            <SupabaseProviderWrapper>
+              <AuthLayoutWrapper>
                 <div className="flex min-h-screen w-full">
-                  <AppSidebar session={session} />
+                  <AppSidebar />
                   <div className="flex flex-col flex-1">
                     <Header />
                     <main className="flex flex-1 flex-col bg-muted/50">
@@ -58,11 +56,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
                     </main>
                   </div>
                 </div>
-              ) : (
-                // For non-authenticated users on auth routes like /sign-up, the children will render.
-                <>{children}</>
-              )}
-            </AuthLayoutWrapper>
+              </AuthLayoutWrapper>
+            </SupabaseProviderWrapper>
             <TailwindIndicator />
             {/* Dark mode toggle fixed at bottom right */}
             <div className="fixed bottom-4 right-4 z-50">

@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useApiUrl } from "@/config/contexts/api_url_context";
+import { useUser } from "@supabase/auth-helpers-react"; // Using Supabase auth hook
+import { v5 as uuidv5 } from "uuid";  // Import UUIDv5
 
 // Import shadcn/ui components (adjust import paths as needed)
 import { Button } from "@/components/ui/button";
@@ -42,7 +44,7 @@ const fieldLabels: Record<keyof Omit<HistoryFormValues, "guessedCondition">, str
   SR: "Systems Review",
 };
 
-interface HistoryMarkingFormProps {
+export interface HistoryMarkingFormProps {
   expectedHistory: string;    // JSON string from page load.
   historyLoadedAt: number;    // Timestamp when history was loaded.
   questionsCount: number;     // Number of times ask-question endpoint was hit.
@@ -50,7 +52,7 @@ interface HistoryMarkingFormProps {
   conversationLogs: string;   // The conversation logs.
 }
 
-export function HistoryMarkingForm({
+function HistoryMarkingFormComponent({
   expectedHistory,
   historyLoadedAt,
   questionsCount,
@@ -59,6 +61,7 @@ export function HistoryMarkingForm({
 }: HistoryMarkingFormProps) {
   const router = useRouter();
   const { apiUrl } = useApiUrl();
+  const user = useUser(); // Get the user object from Supabase
 
   const form = useForm<HistoryFormValues>({
     resolver: zodResolver(historySchema),
@@ -86,8 +89,11 @@ export function HistoryMarkingForm({
       `Systems Review: ${values.SR}`,
     ].join("\n");
 
-    // Retrieve the user UUID from localStorage (adjust the key as needed).
-    const user_id = localStorage.getItem("user_uuid") || "";
+    // Extract the email using Supabase's useUser hook
+    const user_email = user?.email || "";
+    // Use a constant, valid namespace so that the same email always produces the same UUID.
+    const NAMESPACE = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+    const user_id = user_email ? uuidv5(user_email, NAMESPACE) : "";
 
     const payload = {
       expected_history: expectedHistory,
@@ -97,7 +103,7 @@ export function HistoryMarkingForm({
       right_disease: correctCondition,
       conversation_logs: conversationLogs,
       guessed_condition: values.guessedCondition,
-      user_id, // new field for user identification
+      user_id, // Computed as a UUID based on the user's email with a fixed namespace.
     };
 
     console.log("Sending evaluate_history payload:", payload);
@@ -110,7 +116,6 @@ export function HistoryMarkingForm({
       });
       const result = await response.json();
       console.log("Marking result:", result);
-      // Always redirect to the marking page with the result as a query parameter.
       router.push(`/marking-result?result=${encodeURIComponent(JSON.stringify(result))}`);
     } catch (error) {
       console.error("Error submitting history for marking:", error);
@@ -164,5 +169,13 @@ export function HistoryMarkingForm({
         </form>
       </Form>
     </div>
+  );
+}
+
+// If your app is already wrapped with the Supabase provider (from "@supabase/auth-helpers-react"),
+// you don't need to wrap the component here.
+export default function HistoryMarkingFormWithSupabase(props: HistoryMarkingFormProps) {
+  return (
+    <HistoryMarkingFormComponent {...props} />
   );
 }
