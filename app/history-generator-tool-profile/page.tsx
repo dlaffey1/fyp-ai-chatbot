@@ -52,6 +52,7 @@ export default function ChatPage() {
   const [sessionStart, setSessionStart] = useState<number | null>(null);
   const [conversationLogs, setConversationLogs] = useState<string>(""); // Conversation log state.
   const hasFetchedRef = useRef(false);
+  const [resolvedCategory, setResolvedCategory] = useState<string | null>(null);
   const { apiUrl } = useApiUrl();
 
   // Log conversation logs changes for debugging.
@@ -105,6 +106,7 @@ export default function ChatPage() {
       setSessionStart(Date.now());
       // Here, we update mimicConditionNumber with the value from data.right_condition.
       setMimicConditionNumber(data.right_condition);
+      setResolvedCategory(data.category); // Store the resolved category.
     } catch (err) {
       console.error("Error fetching history:", err);
       setHistory(null);
@@ -201,7 +203,7 @@ export default function ChatPage() {
         )}
 
         {/* History Marking Form */}
-        {!loading && history && sessionStart && selectedCategory && mimicConditionNumber && (
+        {!loading && history && sessionStart && resolvedCategory && mimicConditionNumber && (
           <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
             <h2 className="text-xl font-semibold text-center mb-4">
               Answer the Questions
@@ -212,6 +214,7 @@ export default function ChatPage() {
               questionsCount={0} // update as needed
               correctCondition={mimicConditionNumber} // Pass mimic condition number.
               conversationLogs={conversationLogs}
+              category={resolvedCategory}
             />
           </div>
         )}

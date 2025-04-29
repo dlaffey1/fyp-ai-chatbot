@@ -50,6 +50,7 @@ export interface HistoryMarkingFormProps {
   questionsCount: number;     // Number of times ask-question endpoint was hit.
   correctCondition: string;   // The mimic condition number (ICD code) for the case.
   conversationLogs: string;   // The conversation logs.
+  category: string;          // The category of the case.
 }
 
 function HistoryMarkingFormComponent({
@@ -58,6 +59,7 @@ function HistoryMarkingFormComponent({
   questionsCount,
   correctCondition,
   conversationLogs,
+  category,
 }: HistoryMarkingFormProps) {
   const router = useRouter();
   const { apiUrl } = useApiUrl();
@@ -104,6 +106,7 @@ function HistoryMarkingFormComponent({
       conversation_logs: conversationLogs,
       guessed_condition: values.guessedCondition,
       user_id, // Computed as a UUID based on the user's email with a fixed namespace.
+      category,
     };
 
     console.log("Sending evaluate_history payload:", payload);
