@@ -54,11 +54,32 @@ export default function ChatPage() {
   const hasFetchedRef = useRef(false);
   const [resolvedCategory, setResolvedCategory] = useState<string | null>(null);
   const { apiUrl } = useApiUrl();
+  const [mimicConditionName, setMimicConditionName] = useState<string>("");
+
 
   // Log conversation logs changes for debugging.
   useEffect(() => {
     console.log("Conversation logs updated:", conversationLogs);
   }, [conversationLogs]);
+// right after your existing useEffect for fetching conditions
+useEffect(() => {
+  if (!mimicConditionNumber) return;
+
+  const fetchConditionName = async () => {
+    try {
+      const res = await fetch(
+        `${apiUrl}/convert_icd_to_condition?code=${encodeURIComponent(mimicConditionNumber)}`
+      );
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      const { condition } = await res.json();
+      setMimicConditionName(condition);
+    } catch (err) {
+      console.error("Failed to fetch condition name:", err);
+    }
+  };
+
+  fetchConditionName();
+}, [mimicConditionNumber, apiUrl]);
 
   /** Fetch conditions when category is selected */
   useEffect(() => {
@@ -166,6 +187,13 @@ export default function ChatPage() {
         {loading && (
           <div className="flex justify-center items-center min-h-screen">
             <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          </div>
+        )}
+        {!loading && history && mimicConditionName && (
+          <div className="mx-auto max-w-2xl px-4 mt-6 text-center">
+            <h1 className="text-2xl font-bold">
+              {mimicConditionName} <span className="text-gray-500">({mimicConditionNumber})</span>
+            </h1>
           </div>
         )}
 
