@@ -21,6 +21,8 @@ export default function ChatPage() {
   const [history, setHistory] = useState<HistoryData | null>(null);
   // Store the mimic condition number (ICD code) returned by the API.
   const [mimicConditionNumber, setMimicConditionNumber] = useState<string>("");
+  // Store the category returned by the API.
+  const [category, setCategory] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [historyLoadedAt, setHistoryLoadedAt] = useState<number | null>(null);
   const [questionsCount, setQuestionsCount] = useState<number>(0);
@@ -54,6 +56,7 @@ export default function ChatPage() {
         const data = await res.json();
         setHistory(data.history);
         setMimicConditionNumber(data.right_condition);
+        setCategory(data.category); // Set the category
         setHistoryLoadedAt(Date.now());
       } catch (error) {
         console.error("Error fetching history:", error);
@@ -82,13 +85,14 @@ export default function ChatPage() {
               setConversationLogs={setConversationLogs}
             />
             <div className="mx-auto max-w-2xl px-4 mt-8 mb-32">
-              {history && historyLoadedAt && (
+              {history && historyLoadedAt && category && ( // Ensure category is also loaded
                 <HistoryMarkingForm
                   expectedHistory={JSON.stringify(history)}
                   historyLoadedAt={historyLoadedAt}
                   questionsCount={questionsCount}
                   correctCondition={mimicConditionNumber}
                   conversationLogs={conversationLogs}
+                  category={category} // Pass the category prop
                 />
               )}
             </div>
