@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 // Client-only components
 // Use a relative import path so Next can resolve the file under app/components
 const LoginCalendar = dynamic(
-  () => import("./components/calendar-login"),
+  () => import("./components/calendar-login.tsx"),
   { ssr: false }
 );
 const ActivityIcon = dynamic(
