@@ -117,6 +117,19 @@ export function AppSidebar({ session }: { session?: any }) {
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
                       <Link
+                        href="/"
+                        className={cn(
+                          "flex items-center text-sm text-sidebar-foreground hover:underline"
+                        )}
+                      >
+                        <icons.Home className="mr-2" />
+                        <span>Homepage</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link
                         href="/differential-diagnosis-study-tool"
                         className={cn(
                           "flex items-center text-sm text-sidebar-foreground hover:underline"
