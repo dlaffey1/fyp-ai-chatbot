@@ -1,86 +1,106 @@
+# AI Chat Application
 
-<a href="https://chat.vercel.ai/">
-  <img alt="Next.js 13 and app template Router-ready AI chatbot." src="https://chat.vercel.ai/opengraph-image.png" />
-  <h1 align="center">Next.js AI Chatbot</h1>
-</a>
-
-<p align="center">
-  An open-source AI chatbot app template built with Next.js, the Vercel AI SDK, OpenAI, and Supabase Auth and Postgres DB.
-</p>
-
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a> ·
-  <a href="#authors"><strong>Authors</strong></a>
-</p>
-<br/>
+A full-featured AI-powered chat application built with Next.js, React Server Components, and Supabase. Leverage multiple LLM providers (OpenAI, Anthropic, Hugging Face, or custom models via LangChain) with streaming chat UI powered by the Vercel AI SDK.
 
 ## Features
 
-* [Next.js](https://nextjs.org) App Router
-* React Server Components (RSCs), Suspense, and Server Actions
-* [Vercel AI SDK](https://sdk.vercel.ai/docs) for streaming chat UI
-* Support for OpenAI (default), Anthropic, Hugging Face, or custom AI chat models and/or LangChain
-* Edge runtime-ready
-* [shadcn/ui](https://ui.shadcn.com)
+* **Next.js App Router** for nested layouts and file-based routing.
+* **React Server Components (RSCs), Suspense, and Server Actions** for efficient data fetching and UI rendering.
+* **Streaming Chat UI** using the Vercel AI SDK.
+* **Multiple Model Providers**: switch between OpenAI (default), Anthropic, Hugging Face, or your own LangChain integrations.
+* **Edge Runtime–Ready** for low-latency responses.
+* **Tailwind CSS** for utility-first styling, integrated with **shadcn/ui** components.
+* **Radix UI** primitives for accessibility and headless component patterns.
+* **Phosphor Icons** for crisp, customizable icons.
+* **User Authentication** powered by Supabase Auth.
+* **Chat History Persistence** in Supabase Postgres.
 
-  * Styling with [Tailwind CSS](https://tailwindcss.com)
-  * [Radix UI](https://radix-ui.com) for headless component primitives
-  * Icons from [Phosphor Icons](https://phosphoricons.com)
-* Chat History with [Supabase Postgres DB](https://supabase.com)
-* [Supabase Auth](https://supabase.com/auth) for authentication
+## Getting Started
 
-## Model Providers
+### Prerequisites
 
-This template ships with OpenAI `gpt-3.5-turbo` as the default. However, thanks to the [Vercel AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [Anthropic](https://anthropic.com), [Hugging Face](https://huggingface.co), or using [LangChain](https://js.langchain.com) with just a few lines of code.
+* [Node.js](https://nodejs.org/) 18.x or higher
+* [pnpm](https://pnpm.io/) (or npm/yarn)
+* [Supabase CLI](https://supabase.com/docs/guides/cli)
+* A Supabase project with Auth and Database enabled
+* OpenAI, Anthropic, and/or Hugging Face API keys (optional)
 
-## Deploy Your Own
+### 1. Clone the Repository
 
-You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:
+```bash
+git clone https://github.com/your-username/your-repo.git
+cd your-repo
+```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsupabase-community%2Fvercel-ai-chatbot&env=OPENAI_API_KEY&envDescription=You%20must%20first%20activate%20a%20Billing%20Account%20here%3A%20https%3A%2F%2Fplatform.openai.com%2Faccount%2Fbilling%2Foverview&envLink=https%3A%2F%2Fplatform.openai.com%2Faccount%2Fapi-keys&project-name=vercel-ai-chatbot-with-supabase&repository-name=vercel-ai-chatbot-with-supabase&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6&external-id=https%3A%2F%2Fgithub.com%2Fsupabase-community%2Fvercel-ai-chatbot%2Ftree%2Fmain)
+### 2. Install Dependencies
 
-### Set up GitHub OAuth
+```bash
+pnpm install
+```
 
-This demo uses GitHub OAuth. Follow the [GitHub OAuth setup steps](https://supabase.com/docs/guides/auth/social-login/auth-github) on your Supabase project.
+### 3. Configure Environment Variables
 
-### Configure your site url
+Copy the example env file and update values:
 
-In the Supabase Dashboard, navigate to [Auth > URL configuration](https://app.supabase.com/project/_/auth/url-configuration) and set your Vercel URL as the site URL.
+```bash
+cp .env.example .env
+```
 
-## Running locally
+Fill in the following variables in `.env`:
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/concepts/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+```ini
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+AI_API_PROVIDER=openai         # or anthropic, hf
+OPENAI_API_KEY=your-openai-key
+ANTHROPIC_API_KEY=your-anthropic-key
+HF_API_KEY=your-huggingface-key
+```
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
+> **Note:** Never commit your `.env` file to version control.
 
-1. Copy the example env file:
+### 4. Start Supabase Locally (Optional)
 
-   ```bash
-   cp .env.example .env
-   ```
-2. Install the Supabase CLI and start the local Supabase stack:
+If you want to run Supabase locally:
 
-   ```bash
-   npm install supabase --save-dev
-   npx supabase start
-   ```
-3. In the **root** of the project, install dependencies and start the development server:
+```bash
+npx supabase start
+```
 
-   ```bash
-   pnpm install
-   pnpm run dev
-   ```
+### 5. Run the Development Server
 
-Your app template should now be running on [http://localhost:3000](http://localhost:3000/).
+```bash
+pnpm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the app.
+
+## Deployment
+
+This application is optimized for deployment on Vercel (Edge runtime supported). Simply connect your GitHub repository to Vercel, set environment variables in the Vercel dashboard, and deploy.
+
+## Customizing AI Models
+
+By default, the project uses OpenAI `gpt-3.5-turbo`. To switch providers:
+
+1. Change `AI_API_PROVIDER` in your `.env`.
+2. Install any necessary SDKs or configure LangChain adapters in `lib/ai.ts`.
+3. Adjust model parameters in `app/api/chat/route.ts`.
+
+## UI Components
+
+* Built-in UI primitives from **Radix UI** and **shadcn/ui**.
+* Styled with **Tailwind CSS**.
+* Icons courtesy of **Phosphor Icons**.
 
 ## Authors
 
-This library is created by [Vercel](https://vercel.com) and [Next.js](https://nextjs.org) team members, with contributions from:
+* David laffey
+* Contributed by the Next.js & Vercel teams and the open-source community
 
-* Jared Palmer ([@jaredpalmer](https://twitter.com/jaredpalmer)) - [Vercel](https://vercel.com)
-* Shu Ding ([@shuding\_](https://twitter.com/shuding_)) - [Vercel](https://vercel.com)
-* shadcn ([@shadcn](https://twitter.com/shadcn)) - [Contractor](https://shadcn.com)
-* Thor Schaeff ([@thorwebdev](https://twitter.com/thorwebdev)) - [Supabaseifier](https://thor.bio)
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+
