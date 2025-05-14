@@ -18,17 +18,18 @@
 
 ## Features
 
-- [Next.js](https://nextjs.org) App Router
-- React Server Components (RSCs), Suspense, and Server Actions
-- [Vercel AI SDK](https://sdk.vercel.ai/docs) for streaming chat UI
-- Support for OpenAI (default), Anthropic, Hugging Face, or custom AI chat models and/or LangChain
-- Edge runtime-ready
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - [Radix UI](https://radix-ui.com) for headless component primitives
-  - Icons from [Phosphor Icons](https://phosphoricons.com)
-- Chat History with [Supabase Postgres DB](https://supabase.com)
-- [Supabase Auth](https://supabase.com/auth) for authentication
+* [Next.js](https://nextjs.org) App Router
+* React Server Components (RSCs), Suspense, and Server Actions
+* [Vercel AI SDK](https://sdk.vercel.ai/docs) for streaming chat UI
+* Support for OpenAI (default), Anthropic, Hugging Face, or custom AI chat models and/or LangChain
+* Edge runtime-ready
+* [shadcn/ui](https://ui.shadcn.com)
+
+  * Styling with [Tailwind CSS](https://tailwindcss.com)
+  * [Radix UI](https://radix-ui.com) for headless component primitives
+  * Icons from [Phosphor Icons](https://phosphoricons.com)
+* Chat History with [Supabase Postgres DB](https://supabase.com)
+* [Supabase Auth](https://supabase.com/auth) for authentication
 
 ## Model Providers
 
@@ -42,7 +43,7 @@ You can deploy your own version of the Next.js AI Chatbot to Vercel with one cli
 
 ### Set up GitHub OAuth
 
-This demo uses GitHub Oauth. Follow the [GitHub OAuth setup steps](https://supabase.com/docs/guides/auth/social-login/auth-github) on your Supabase project.
+This demo uses GitHub OAuth. Follow the [GitHub OAuth setup steps](https://supabase.com/docs/guides/auth/social-login/auth-github) on your Supabase project.
 
 ### Configure your site url
 
@@ -54,33 +55,31 @@ You will need to use the environment variables [defined in `.env.example`](.env.
 
 > Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
 
-Copy the `.env.example` file and populate the required env vars:
+1. Copy the example env file:
 
-```bash
-cp .env.example .env
-```
+   ```bash
+   cp .env.example .env
+   ```
+2. Install the Supabase CLI and start the local Supabase stack:
 
-[Install the Supabase CLI](https://supabase.com/docs/guides/cli) and start the local Supabase stack:
+   ```bash
+   npm install supabase --save-dev
+   npx supabase start
+   ```
+3. In the **root** of the project, install dependencies and start the development server:
 
-```bash
-npm install supabase --save-dev
-npx supabase start
-```
+   ```bash
+   pnpm install
+   pnpm run dev
+   ```
 
-Install the local dependencies and start dev mode:
-
-```bash
-pnpm install
-pnpm dev
-```
-
-Your app template should now be running on [localhost:3000](http://localhost:3000/).
+Your app template should now be running on [http://localhost:3000](http://localhost:3000/).
 
 ## Authors
 
 This library is created by [Vercel](https://vercel.com) and [Next.js](https://nextjs.org) team members, with contributions from:
 
-- Jared Palmer ([@jaredpalmer](https://twitter.com/jaredpalmer)) - [Vercel](https://vercel.com)
-- Shu Ding ([@shuding\_](https://twitter.com/shuding_)) - [Vercel](https://vercel.com)
-- shadcn ([@shadcn](https://twitter.com/shadcn)) - [Contractor](https://shadcn.com)
-- Thor Schaeff ([@thorwebdev](https://twitter.com/thorwebdev)) - [Supabaseifier](https://thor.bio)
+* Jared Palmer ([@jaredpalmer](https://twitter.com/jaredpalmer)) - [Vercel](https://vercel.com)
+* Shu Ding ([@shuding\_](https://twitter.com/shuding_)) - [Vercel](https://vercel.com)
+* shadcn ([@shadcn](https://twitter.com/shadcn)) - [Contractor](https://shadcn.com)
+* Thor Schaeff ([@thorwebdev](https://twitter.com/thorwebdev)) - [Supabaseifier](https://thor.bio)
